@@ -34,7 +34,7 @@ interface MonthlyReportData {
 
 export class PdfService {
   /**
-   * Generate professional PDF report for monthly student progress
+   * Generate simple table-based PDF report (Excel-style)
    */
   async generateMonthlyReport(data: MonthlyReportData, res: Response): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -42,11 +42,12 @@ export class PdfService {
         const doc = new PDFDocument({
           size: 'A4',
           margins: {
-            top: 50,
-            bottom: 50,
-            left: 50,
-            right: 50,
+            top: 40,
+            bottom: 40,
+            left: 40,
+            right: 40,
           },
+          layout: 'landscape', // Landscape untuk tabel lebih lebar
         });
 
         // Set response headers for PDF download
@@ -57,17 +58,17 @@ export class PdfService {
         // Pipe PDF to response
         doc.pipe(res);
 
-        // HEADER - Logo & Title
+        // HEADER - Simple Title
         this.drawHeader(doc, data);
 
-        // STUDENT INFO
+        // STUDENT INFO TABLE
         this.drawStudentInfo(doc, data);
 
-        // SUMMARY SECTION
+        // SUMMARY TABLE
         this.drawSummary(doc, data);
 
-        // DETAILED SESSIONS
-        this.drawSessions(doc, data);
+        // MAIN DATA TABLE
+        this.drawReportsTable(doc, data);
 
         // FOOTER
         this.drawFooter(doc);
@@ -83,427 +84,256 @@ export class PdfService {
     });
   }
 
-  private drawHeader(doc: PDFKit.PDFDocument, _data: MonthlyReportData) {
-    // Header background gradient effect (purple to pink)
+  private drawHeader(doc: PDFKit.PDFDocument, data: MonthlyReportData) {
+    // Simple header with title
     doc
-      .rect(0, 0, doc.page.width, 140)
-      .fillAndStroke('#8B5CF6', '#EC4899');
-
-    // Reset to white for text
-    doc.fillColor('#FFFFFF');
-
-    // Logo area (simplified book icon using shapes)
-    const logoX = 50;
-    const logoY = 30;
-    
-    // Book icon - simple rectangle
-    doc
-      .rect(logoX, logoY, 35, 45)
-      .fillAndStroke('#FFFFFF', '#FFFFFF');
-    
-    // Book pages effect
-    doc
-      .rect(logoX + 5, logoY + 5, 25, 35)
-      .fillAndStroke('#E9D5FF', '#E9D5FF');
-    
-    // Sparkle decoration
-    doc
-      .circle(logoX + 30, logoY + 10, 3)
-      .fill('#FDE68A');
-
-    // Title - Miss Rafika's Learning Center
-    doc
-      .fontSize(26)
+      .fontSize(16)
       .font('Helvetica-Bold')
-      .fillColor('#FFFFFF')
-      .text('MISS RAFIKA\'S LEARNING CENTER', 100, 35, {
-        width: doc.page.width - 150,
-      });
-
-    // Tagline
-    doc
-      .fontSize(11)
-      .font('Helvetica')
-      .text('Belajar • Berkembang • Berprestasi', 100, 65, {
-        width: doc.page.width - 150,
-      });
-
-    // Report title
-    doc
-      .fontSize(18)
-      .font('Helvetica-Bold')
-      .text('LAPORAN PEMBELAJARAN BULANAN', 50, 95, {
+      .fillColor('#000000')
+      .text('LAPORAN PEMBELAJARAN BULANAN', 40, 40, {
         align: 'center',
-        width: doc.page.width - 100,
+        width: doc.page.width - 80,
       });
 
-    // Reset color for content
-    doc.fillColor('#1F2937');
-    
-    // Move cursor down after header
-    doc.y = 160;
+    doc
+      .fontSize(10)
+      .font('Helvetica')
+      .text(`Periode: ${data.period.month} ${data.period.year}`, 40, 60, {
+        align: 'center',
+        width: doc.page.width - 80,
+      });
+
+    doc.y = 85;
   }
 
   private drawStudentInfo(doc: PDFKit.PDFDocument, data: MonthlyReportData) {
     const startY = doc.y;
+    const leftCol = 40;
+    const valueCol = 150;
 
-    // Section title
+    // Draw simple info box
     doc
-      .fontSize(16)
+      .fontSize(9)
       .font('Helvetica-Bold')
-      .fillColor('#8B5CF6')
-      .text('Informasi Siswa', 50, startY);
+      .fillColor('#000000');
 
-    doc.y += 25;
+    doc.text('Nama Siswa:', leftCol, startY);
+    doc.font('Helvetica').text(data.student.name, valueCol, startY);
 
-    // Info box with light purple background
-    const boxY = doc.y;
-    doc
-      .rect(50, boxY, doc.page.width - 100, 80)
-      .fillAndStroke('#F3F4F6', '#E5E7EB');
+    doc.font('Helvetica-Bold').text('Kelas:', leftCol, startY + 15);
+    doc.font('Helvetica').text(data.student.grade, valueCol, startY + 15);
 
-    doc.fillColor('#000000');
+    doc.font('Helvetica-Bold').text('Orang Tua:', leftCol, startY + 30);
+    doc.font('Helvetica').text(data.student.parentName, valueCol, startY + 30);
 
-    // Student details
-    const leftCol = 70;
-    const rightCol = 320;
-    let currentY = boxY + 20;
-
-    doc
-      .fontSize(11)
-      .font('Helvetica-Bold')
-      .text('Nama Siswa:', leftCol, currentY);
-    doc
-      .font('Helvetica')
-      .text(data.student.name, leftCol + 100, currentY);
-
-    currentY += 20;
-    doc
-      .font('Helvetica-Bold')
-      .text('Kelas:', leftCol, currentY);
-    doc
-      .font('Helvetica')
-      .text(data.student.grade, leftCol + 100, currentY);
-
-    currentY = boxY + 20;
-    doc
-      .font('Helvetica-Bold')
-      .text('Orang Tua:', rightCol, currentY);
-    doc
-      .font('Helvetica')
-      .text(data.student.parentName, rightCol + 100, currentY);
-
-    currentY += 20;
-    doc
-      .font('Helvetica-Bold')
-      .text('Periode:', rightCol, currentY);
-    doc
-      .font('Helvetica')
-      .text(`${data.period.month} ${data.period.year}`, rightCol + 100, currentY);
-
-    doc.y = boxY + 100;
+    doc.y = startY + 50;
   }
 
   private drawSummary(doc: PDFKit.PDFDocument, data: MonthlyReportData) {
-    doc.y += 20;
     const startY = doc.y;
+    const leftCol = 40;
 
-    // Section title
-    doc
-      .fontSize(16)
-      .font('Helvetica-Bold')
-      .fillColor('#8B5CF6')
-      .text('Ringkasan', 50, startY);
-
-    doc.y += 25;
-
-    // Stats cards in a row
-    const cardWidth = 130;
-    const cardHeight = 80;
-    const gap = 15;
-    const startX = 50;
-    let currentX = startX;
-
-    // Card 1: Total Hadir
-    this.drawStatCard(
-      doc,
-      currentX,
-      doc.y,
-      cardWidth,
-      cardHeight,
-      'Total Hadir',
-      `${data.summary.presentCount}x`,
-      '#10B981'
-    );
-
-    currentX += cardWidth + gap;
-
-    // Card 2: Avg Enthusiasm
-    this.drawStatCard(
-      doc,
-      currentX,
-      doc.y,
-      cardWidth,
-      cardHeight,
-      'Semangat',
-      `${data.summary.avgEnthusiasm.toFixed(1)} ⭐`,
-      '#F59E0B'
-    );
-
-    currentX += cardWidth + gap;
-
-    // Card 3: Avg Focus
-    this.drawStatCard(
-      doc,
-      currentX,
-      doc.y,
-      cardWidth,
-      cardHeight,
-      'Fokus',
-      `${data.summary.avgFocus.toFixed(1)} ⭐`,
-      '#3B82F6'
-    );
-
-    currentX += cardWidth + gap;
-
-    // Card 4: Avg Understanding
-    this.drawStatCard(
-      doc,
-      currentX,
-      doc.y,
-      cardWidth,
-      cardHeight,
-      'Pemahaman',
-      `${data.summary.avgUnderstanding.toFixed(1)} ⭐`,
-      '#8B5CF6'
-    );
-
-    doc.y += cardHeight + 30;
-
-    // Subjects learned
-    doc
-      .fontSize(12)
-      .font('Helvetica-Bold')
-      .fillColor('#000000')
-      .text('Mata Pelajaran:', 50, doc.y);
-
-    doc
-      .fontSize(11)
-      .font('Helvetica')
-      .fillColor('#6B7280')
-      .text(data.subjects.join(', '), 50, doc.y + 18);
-
-    doc.y += 50;
-  }
-
-  private drawStatCard(
-    doc: PDFKit.PDFDocument,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    label: string,
-    value: string,
-    color: string
-  ) {
-    // Card background
-    doc
-      .roundedRect(x, y, width, height, 8)
-      .fillAndStroke('#FFFFFF', '#E5E7EB');
-
-    // Colored top bar
-    doc
-      .roundedRect(x, y, width, 4, 8)
-      .fill(color);
-
-    // Label
-    doc
-      .fontSize(10)
-      .font('Helvetica')
-      .fillColor('#6B7280')
-      .text(label, x + 15, y + 20, {
-        width: width - 30,
-        align: 'center',
-      });
-
-    // Value
-    doc
-      .fontSize(20)
-      .font('Helvetica-Bold')
-      .fillColor('#1F2937')
-      .text(value, x + 15, y + 40, {
-        width: width - 30,
-        align: 'center',
-      });
-  }
-
-  private drawSessions(doc: PDFKit.PDFDocument, data: MonthlyReportData) {
-    // Check if we need a new page
-    if (doc.y > 600) {
-      doc.addPage();
-      doc.y = 50;
-    }
-
-    // Section title
-    doc
-      .fontSize(16)
-      .font('Helvetica-Bold')
-      .fillColor('#8B5CF6')
-      .text('Detail Pertemuan', 50, doc.y);
-
-    doc.y += 25;
-
-    // Draw each session
-    data.reports.forEach((report, index) => {
-      // Check if we need a new page
-      if (doc.y > 650) {
-        doc.addPage();
-        doc.y = 50;
-      }
-
-      this.drawSessionCard(doc, report, index + 1);
-      doc.y += 15;
-    });
-  }
-
-  private drawSessionCard(doc: PDFKit.PDFDocument, report: any, number: number) {
-    const startY = doc.y;
-    const boxHeight = 150;
-
-    // Card background
-    doc
-      .roundedRect(50, startY, doc.page.width - 100, boxHeight, 8)
-      .fillAndStroke('#FAFAFA', '#E5E7EB');
-
-    // Session number badge
-    doc
-      .circle(70, startY + 20, 15)
-      .fillAndStroke('#8B5CF6', '#6B46C1');
-
-    doc
-      .fontSize(12)
-      .font('Helvetica-Bold')
-      .fillColor('#FFFFFF')
-      .text(number.toString(), 65, startY + 13);
-
-    // Session details
-    doc.fillColor('#000000');
-    let currentY = startY + 10;
-
-    // Date & Subject
-    doc
-      .fontSize(11)
-      .font('Helvetica-Bold')
-      .text(`${report.date} • ${report.subject}`, 95, currentY);
-
-    currentY += 20;
-
-    // Topic
-    doc
-      .fontSize(10)
-      .font('Helvetica-Bold')
-      .fillColor('#6B7280')
-      .text('Materi:', 95, currentY);
-    doc
-      .font('Helvetica')
-      .fillColor('#000000')
-      .text(report.topic, 140, currentY, {
-        width: doc.page.width - 190,
-      });
-
-    currentY += 25;
-
-    // Ratings
-    const ratingX = 95;
     doc
       .fontSize(9)
+      .font('Helvetica-Bold')
+      .fillColor('#000000')
+      .text('RINGKASAN', leftCol, startY);
+
+    doc.y += 15;
+
+    // Simple summary line
+    const summaryText = `Total Pertemuan: ${data.summary.presentCount}x | Rata-rata Semangat: ${data.summary.avgEnthusiasm.toFixed(1)} | Fokus: ${data.summary.avgFocus.toFixed(1)} | Pemahaman: ${data.summary.avgUnderstanding.toFixed(1)}`;
+    
+    doc
+      .fontSize(8)
       .font('Helvetica')
-      .fillColor('#6B7280')
-      .text(`Semangat: `, ratingX, currentY);
-    doc
-      .fillColor('#F59E0B')
-      .text('⭐'.repeat(report.enthusiasmScore), ratingX + 60, currentY);
+      .text(summaryText, leftCol, doc.y);
 
-    doc
-      .fillColor('#6B7280')
-      .text(`Fokus: `, ratingX + 150, currentY);
-    doc
-      .fillColor('#3B82F6')
-      .text('⭐'.repeat(report.focusScore), ratingX + 185, currentY);
+    doc.y += 20;
+  }
 
-    doc
-      .fillColor('#6B7280')
-      .text(`Pemahaman: `, ratingX + 275, currentY);
-    doc
-      .fillColor('#8B5CF6')
-      .text('⭐'.repeat(report.understandingScore), ratingX + 345, currentY);
+  private drawReportsTable(doc: PDFKit.PDFDocument, data: MonthlyReportData) {
+    const startY = doc.y;
+    const startX = 40;
+    const pageWidth = doc.page.width - 80;
 
-    currentY += 25;
+    // Table column widths (landscape mode)
+    const colWidths = {
+      no: 30,
+      date: 70,
+      subject: 90,
+      topic: 120,
+      semangat: 60,
+      fokus: 60,
+      pemahaman: 70,
+      pr: 90,
+      notes: 150,
+    };
 
-    // Homework (if any)
-    if (report.homework) {
+    // Draw table header
+    doc
+      .fontSize(8)
+      .font('Helvetica-Bold')
+      .fillColor('#FFFFFF');
+
+    let currentX = startX;
+    let currentY = startY;
+
+    // Header background
+    doc
+      .rect(startX, currentY, pageWidth, 20)
+      .fill('#4B5563');
+
+    doc.fillColor('#FFFFFF');
+
+    // Header cells
+    currentX = startX;
+    currentY = startY + 5;
+
+    doc.text('No', currentX + 5, currentY, { width: colWidths.no, align: 'center' });
+    currentX += colWidths.no;
+
+    doc.text('Tanggal', currentX + 2, currentY, { width: colWidths.date, align: 'center' });
+    currentX += colWidths.date;
+
+    doc.text('Mata Pelajaran', currentX + 2, currentY, { width: colWidths.subject, align: 'center' });
+    currentX += colWidths.subject;
+
+    doc.text('Materi', currentX + 2, currentY, { width: colWidths.topic, align: 'center' });
+    currentX += colWidths.topic;
+
+    doc.text('Semangat', currentX + 2, currentY, { width: colWidths.semangat, align: 'center' });
+    currentX += colWidths.semangat;
+
+    doc.text('Fokus', currentX + 2, currentY, { width: colWidths.fokus, align: 'center' });
+    currentX += colWidths.fokus;
+
+    doc.text('Pemahaman', currentX + 2, currentY, { width: colWidths.pemahaman, align: 'center' });
+    currentX += colWidths.pemahaman;
+
+    doc.text('PR', currentX + 2, currentY, { width: colWidths.pr, align: 'center' });
+    currentX += colWidths.pr;
+
+    doc.text('Catatan', currentX + 2, currentY, { width: colWidths.notes, align: 'center' });
+
+    currentY = startY + 20;
+
+    // Draw table rows
+    doc.fillColor('#000000').font('Helvetica');
+
+    data.reports.forEach((report, index) => {
+      // Check if need new page
+      if (currentY > doc.page.height - 100) {
+        doc.addPage({ layout: 'landscape' });
+        currentY = 40;
+      }
+
+      const rowHeight = 35;
+
+      // Alternating row colors
+      if (index % 2 === 0) {
+        doc.rect(startX, currentY, pageWidth, rowHeight).fill('#F9FAFB');
+      } else {
+        doc.rect(startX, currentY, pageWidth, rowHeight).fill('#FFFFFF');
+      }
+
+      doc.fillColor('#000000');
+
+      currentX = startX;
+      const textY = currentY + 8;
+
+      // No
+      doc.fontSize(8).text((index + 1).toString(), currentX + 5, textY, {
+        width: colWidths.no,
+        align: 'center',
+      });
+      currentX += colWidths.no;
+
+      // Tanggal
+      doc.text(report.date, currentX + 2, textY, {
+        width: colWidths.date,
+        align: 'left',
+      });
+      currentX += colWidths.date;
+
+      // Subject
+      doc.text(report.subject, currentX + 2, textY, {
+        width: colWidths.subject,
+        align: 'left',
+      });
+      currentX += colWidths.subject;
+
+      // Topic
+      doc.text(report.topic, currentX + 2, textY, {
+        width: colWidths.topic,
+        align: 'left',
+        height: rowHeight - 10,
+      });
+      currentX += colWidths.topic;
+
+      // Semangat (bintang)
+      const semangat = '★'.repeat(report.enthusiasmScore);
+      doc.text(semangat, currentX + 2, textY, {
+        width: colWidths.semangat,
+        align: 'center',
+      });
+      currentX += colWidths.semangat;
+
+      // Fokus (bintang)
+      const fokus = '★'.repeat(report.focusScore);
+      doc.text(fokus, currentX + 2, textY, {
+        width: colWidths.fokus,
+        align: 'center',
+      });
+      currentX += colWidths.fokus;
+
+      // Pemahaman (bintang)
+      const pemahaman = '★'.repeat(report.understandingScore);
+      doc.text(pemahaman, currentX + 2, textY, {
+        width: colWidths.pemahaman,
+        align: 'center',
+      });
+      currentX += colWidths.pemahaman;
+
+      // PR
+      doc.fontSize(7).text(report.homework || '-', currentX + 2, textY, {
+        width: colWidths.pr,
+        align: 'left',
+        height: rowHeight - 10,
+      });
+      currentX += colWidths.pr;
+
+      // Notes
+      doc.text(report.progressNotes || '-', currentX + 2, textY, {
+        width: colWidths.notes,
+        align: 'left',
+        height: rowHeight - 10,
+      });
+
+      // Draw row border
       doc
-        .fontSize(9)
-        .font('Helvetica-Bold')
-        .fillColor('#6B7280')
-        .text('PR:', 95, currentY);
-      doc
-        .font('Helvetica')
-        .fillColor('#000000')
-        .text(report.homework, 115, currentY, {
-          width: doc.page.width - 165,
-        });
-      currentY += 18;
-    }
+        .strokeColor('#E5E7EB')
+        .lineWidth(0.5)
+        .rect(startX, currentY, pageWidth, rowHeight)
+        .stroke();
 
-    // Progress notes (if any)
-    if (report.progressNotes) {
-      doc
-        .fontSize(9)
-        .font('Helvetica-Bold')
-        .fillColor('#6B7280')
-        .text('Catatan:', 95, currentY);
-      doc
-        .font('Helvetica')
-        .fillColor('#000000')
-        .text(report.progressNotes, 140, currentY, {
-          width: doc.page.width - 190,
-        });
-    }
+      currentY += rowHeight;
+    });
 
-    doc.y = startY + boxHeight + 5;
+    doc.y = currentY + 10;
   }
 
   private drawFooter(doc: PDFKit.PDFDocument) {
     const pageHeight = doc.page.height;
-    const footerY = pageHeight - 60;
-
-    // Footer line
-    doc
-      .moveTo(50, footerY)
-      .lineTo(doc.page.width - 50, footerY)
-      .strokeColor('#E5E7EB')
-      .stroke();
-
-    // Footer text
-    doc
-      .fontSize(9)
-      .font('Helvetica')
-      .fillColor('#6B7280')
-      .text('Belajar with Miss Fika - Belajar • Berkembang • Berprestasi', 50, footerY + 15, {
-        align: 'center',
-        width: doc.page.width - 100,
-      });
+    const footerY = pageHeight - 30;
 
     doc
       .fontSize(8)
-      .text(`Dicetak pada: ${new Date().toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })}`, 50, footerY + 30, {
+      .font('Helvetica')
+      .fillColor('#6B7280')
+      .text('Belajar with Miss Fika', 40, footerY, {
         align: 'center',
-        width: doc.page.width - 100,
+        width: doc.page.width - 80,
       });
   }
 }
