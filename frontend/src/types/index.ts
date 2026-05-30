@@ -8,6 +8,9 @@ export interface Student {
   address: string | null;
   tarif: number | null;
   status: string;
+  salaryScheduleType: string;
+  monthlyPaymentDate: number | null;
+  lastSalaryGeneratedAt: string | null;
   createdAt: string;
   updatedAt: string;
   totalReports?: number;
@@ -21,6 +24,8 @@ export interface StudentFormData {
   address?: string;
   tarif?: number;
   status?: string;
+  salaryScheduleType?: string;
+  monthlyPaymentDate?: number;
 }
 
 // Schedule types
