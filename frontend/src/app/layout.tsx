@@ -6,7 +6,7 @@ import Sidebar from '@/components/layout/Sidebar';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Miss Rafika\'s Learning Center',
+  title: 'Belajar with Miss Fika',
   description: 'Platform manajemen les private modern untuk anak SD',
 };
 
