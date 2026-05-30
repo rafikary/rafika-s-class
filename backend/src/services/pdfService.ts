@@ -251,63 +251,64 @@ export class PdfService {
       notes: 150,
     };
 
-    // Draw table header
-    doc
-      .fontSize(8)
-      .font('Helvetica-Bold')
-      .fillColor('#FFFFFF');
+    const drawTableHeader = (headerY: number) => {
+      doc
+        .fontSize(8)
+        .font('Helvetica-Bold')
+        .fillColor('#FFFFFF');
+
+      let headerX = startX;
+
+      doc
+        .rect(startX, headerY, pageWidth, 20)
+        .fill('#4B5563');
+
+      doc.fillColor('#FFFFFF');
+
+      const textY = headerY + 5;
+
+      doc.text('No', headerX + 5, textY, { width: colWidths.no, align: 'center' });
+      headerX += colWidths.no;
+
+      doc.text('Tanggal', headerX + 2, textY, { width: colWidths.date, align: 'center' });
+      headerX += colWidths.date;
+
+      doc.text('Mata Pelajaran', headerX + 2, textY, { width: colWidths.subject, align: 'center' });
+      headerX += colWidths.subject;
+
+      doc.text('Materi', headerX + 2, textY, { width: colWidths.topic, align: 'center' });
+      headerX += colWidths.topic;
+
+      doc.text('Semangat', headerX + 2, textY, { width: colWidths.semangat, align: 'center' });
+      headerX += colWidths.semangat;
+
+      doc.text('Fokus', headerX + 2, textY, { width: colWidths.fokus, align: 'center' });
+      headerX += colWidths.fokus;
+
+      doc.text('Pemahaman', headerX + 2, textY, { width: colWidths.pemahaman, align: 'center' });
+      headerX += colWidths.pemahaman;
+
+      doc.text('PR', headerX + 2, textY, { width: colWidths.pr, align: 'center' });
+      headerX += colWidths.pr;
+
+      doc.text('Catatan', headerX + 2, textY, { width: colWidths.notes, align: 'center' });
+
+      return headerY + 20;
+    };
 
     let currentX = startX;
-    let currentY = startY;
-
-    // Header background
-    doc
-      .rect(startX, currentY, pageWidth, 20)
-      .fill('#4B5563');
-
-    doc.fillColor('#FFFFFF');
-
-    // Header cells
-    currentX = startX;
-    currentY = startY + 5;
-
-    doc.text('No', currentX + 5, currentY, { width: colWidths.no, align: 'center' });
-    currentX += colWidths.no;
-
-    doc.text('Tanggal', currentX + 2, currentY, { width: colWidths.date, align: 'center' });
-    currentX += colWidths.date;
-
-    doc.text('Mata Pelajaran', currentX + 2, currentY, { width: colWidths.subject, align: 'center' });
-    currentX += colWidths.subject;
-
-    doc.text('Materi', currentX + 2, currentY, { width: colWidths.topic, align: 'center' });
-    currentX += colWidths.topic;
-
-    doc.text('Semangat', currentX + 2, currentY, { width: colWidths.semangat, align: 'center' });
-    currentX += colWidths.semangat;
-
-    doc.text('Fokus', currentX + 2, currentY, { width: colWidths.fokus, align: 'center' });
-    currentX += colWidths.fokus;
-
-    doc.text('Pemahaman', currentX + 2, currentY, { width: colWidths.pemahaman, align: 'center' });
-    currentX += colWidths.pemahaman;
-
-    doc.text('PR', currentX + 2, currentY, { width: colWidths.pr, align: 'center' });
-    currentX += colWidths.pr;
-
-    doc.text('Catatan', currentX + 2, currentY, { width: colWidths.notes, align: 'center' });
-
-    currentY = startY + 20;
+    let currentY = drawTableHeader(startY);
 
     // Draw table rows
     doc.fillColor('#000000').font('Helvetica');
 
     const minRowHeight = 28;
-    const rowPaddingY = 8;
+    const rowPaddingY = 10;
+    const rowLineGap = 1;
 
     const measureTextHeight = (text: string, width: number, fontSize: number) => {
       doc.fontSize(fontSize).font('Helvetica');
-      return doc.heightOfString(text, { width, align: 'left' });
+      return doc.heightOfString(text, { width, align: 'left', lineGap: rowLineGap });
     };
 
     data.reports.forEach((report, index) => {
@@ -342,7 +343,7 @@ export class PdfService {
         this.drawWatermark(doc);
         doc.y = savedY;
         
-        currentY = 40;
+        currentY = drawTableHeader(40);
       }
 
       const textY = currentY + 5;
@@ -375,6 +376,7 @@ export class PdfService {
       doc.text(subjectsText, currentX + 2, textY, {
         width: colWidths.subject,
         align: 'left',
+        lineGap: rowLineGap,
       });
       currentX += colWidths.subject;
 
@@ -382,6 +384,7 @@ export class PdfService {
       doc.text(topicsText, currentX + 2, textY, {
         width: colWidths.topic,
         align: 'left',
+        lineGap: rowLineGap,
       });
       currentX += colWidths.topic;
 
@@ -413,6 +416,7 @@ export class PdfService {
       doc.fontSize(7).text(prText, currentX + 2, textY, {
         width: colWidths.pr,
         align: 'left',
+        lineGap: rowLineGap,
       });
       currentX += colWidths.pr;
 
@@ -420,6 +424,7 @@ export class PdfService {
       doc.text(notesText, currentX + 2, textY, {
         width: colWidths.notes,
         align: 'left',
+        lineGap: rowLineGap,
       });
 
       // Draw row border
