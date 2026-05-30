@@ -246,20 +246,25 @@ export class ReportController {
 
       const progressSummary = `Rata-rata pencapaian ${avgScore}/5 dengan ${monthlyReport.summary.present} pertemuan hadir dari ${monthlyReport.summary.totalSessions} total pertemuan`;
 
-      // Generate download URL - direct link to PDF endpoint
-      const backendUrl = config.backendUrl || 'https://rafika-s-class-production.up.railway.app';
+      // Generate download URL - link to frontend download page with locked student & dates
+      const frontendUrl = config.frontendUrl || 'https://rafika-s-class.vercel.app';
       
-      // Build query string based on what was provided
+      // Build query string for frontend download page
       const queryParams = new URLSearchParams();
-      if (validation.data.month && validation.data.year) {
-        queryParams.append('month', validation.data.month.toString());
-        queryParams.append('year', validation.data.year.toString());
-      } else if (validation.data.startDate && validation.data.endDate) {
-        queryParams.append('startDate', validation.data.startDate);
-        queryParams.append('endDate', validation.data.endDate);
+      queryParams.append('student', studentId.toString());
+      
+      if (validation.data.startDate && validation.data.endDate) {
+        queryParams.append('start', validation.data.startDate);
+        queryParams.append('end', validation.data.endDate);
+      } else if (validation.data.month && validation.data.year) {
+        // Convert month/year to date range
+        const startOfMonth = new Date(validation.data.year, validation.data.month - 1, 1);
+        const endOfMonth = new Date(validation.data.year, validation.data.month, 0);
+        queryParams.append('start', startOfMonth.toISOString().split('T')[0]);
+        queryParams.append('end', endOfMonth.toISOString().split('T')[0]);
       }
       
-      const downloadUrl = `${backendUrl}/api/reports/${studentId}/monthly/pdf?${queryParams.toString()}`;
+      const downloadUrl = `${frontendUrl}/download-pdf?${queryParams.toString()}`;
 
       const message = generateMonthlyReportWhatsAppMessage({
         studentName: monthlyReport.student.name,

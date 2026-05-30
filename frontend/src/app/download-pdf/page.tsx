@@ -156,63 +156,80 @@ function DownloadPdfContent() {
               )}
             </div>
 
-            {/* Quick Period Buttons */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Quick Select Period
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => handleQuickPeriod(7)}
-                  className="text-xs border border-gray-300 hover:bg-gray-50"
-                >
-                  Last 7 Days
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => handleQuickPeriod(14)}
-                  className="text-xs border border-gray-300 hover:bg-gray-50"
-                >
-                  Last 14 Days
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => handleQuickPeriod(30)}
-                  className="text-xs border border-gray-300 hover:bg-gray-50"
-                >
-                  Last 30 Days
-                </Button>
+            {/* Quick Period Buttons - Only show for Admin */}
+            {!isLocked && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Quick Select Period
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => handleQuickPeriod(7)}
+                    className="text-xs border border-gray-300 hover:bg-gray-50"
+                  >
+                    Last 7 Days
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => handleQuickPeriod(14)}
+                    className="text-xs border border-gray-300 hover:bg-gray-50"
+                  >
+                    Last 14 Days
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => handleQuickPeriod(30)}
+                    className="text-xs border border-gray-300 hover:bg-gray-50"
+                  >
+                    Last 30 Days
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Date Range */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Start Date <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+            <div>
+              {isLocked && (
+                <div className="mb-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-xs text-amber-800">
+                    📅 Report period selected by teacher
+                  </p>
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Start Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    disabled={isLocked}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      isLocked ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  End Date <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    End Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    disabled={isLocked}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      isLocked ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
+                  />
+                </div>
               </div>
             </div>
 
