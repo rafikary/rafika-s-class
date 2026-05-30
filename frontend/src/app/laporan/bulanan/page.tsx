@@ -237,15 +237,26 @@ export default function LaporanBulananPage() {
                     Kelas {monthlyReport.student.grade} • Orang Tua: {monthlyReport.student.parentName}
                   </p>
                 </div>
-                <Button
-                  onClick={handleSendToWhatsApp}
-                  disabled={exporting || !monthlyReport.student.parentWhatsapp}
-                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
-                  size="lg"
-                >
-                  <MessageCircle size={20} className="mr-2" />
-                  {exporting ? 'Memproses...' : 'Kirim ke Wali Siswa 📱'}
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button
+                    onClick={handleSendToWhatsApp}
+                    disabled={exporting || !monthlyReport.student.parentWhatsapp}
+                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                    size="lg"
+                  >
+                    <MessageCircle size={20} className="mr-2" />
+                    {exporting ? 'Memproses...' : 'Kirim ke Wali Siswa 📱'}
+                  </Button>
+                  <Button
+                    onClick={handleExportPdf}
+                    disabled={exporting}
+                    variant="secondary"
+                    size="lg"
+                  >
+                    <Download size={18} className="mr-2" />
+                    Backup PDF
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
