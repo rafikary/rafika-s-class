@@ -2,12 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Users, FileText, Calendar, TrendingUp, DollarSign } from 'lucide-react';
-import { StarRating } from '@/components/ui/StarRating';
+import { Users, FileText, TrendingUp, DollarSign } from 'lucide-react';
 import { NotificationsWidget } from '@/components/dashboard/NotificationsWidget';
 import { dashboardApi } from '@/lib/api';
-import { DailyReport } from '@/types';
-import { formatDateShort, cn } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -19,7 +17,6 @@ export default function DashboardPage() {
     incomeThisMonth: 0,
   });
   const [incomeBreakdown, setIncomeBreakdown] = useState<any[]>([]);
-  const [recentReports, setRecentReports] = useState<DailyReport[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,7 +29,6 @@ export default function DashboardPage() {
 
       // Load dashboard stats from new API
       const statsData = await dashboardApi.getStats();
-      const recent = await dashboardApi.getRecentReports(5);
 
       setStats({
         totalStudents: statsData.totalStudents,
@@ -43,8 +39,6 @@ export default function DashboardPage() {
       });
 
       setIncomeBreakdown(statsData.incomeBreakdown || []);
-
-      setRecentReports(recent);
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
     } finally {
@@ -280,73 +274,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       )}
-
-      {/* Recent Reports */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg shadow-purple-500/30">
-              <FileText className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <CardTitle>Laporan Terbaru</CardTitle>
-              <p className="text-sm text-slate-500 mt-1">5 laporan terakhir yang diinput</p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {recentReports.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="p-4 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <FileText className="h-8 w-8 text-slate-400" />
-              </div>
-              <p className="text-slate-500 font-medium">Belum ada laporan</p>
-              <p className="text-sm text-slate-400 mt-1">Mulai input laporan harian siswa</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {recentReports.map((report) => (
-                <div
-                  key={report.id}
-                  className="group flex items-center justify-between p-5 rounded-2xl border-2 border-slate-200 hover:border-purple-300 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200 hover:shadow-lg hover:shadow-purple-200/50"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-purple-500/30">
-                        {report.student?.name.charAt(0)}
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-slate-900">{report.student?.name}</h4>
-                        <p className="text-sm text-slate-600">{report.subject} - {report.topic}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-slate-500">
-                      <Calendar className="h-3.5 w-3.5" />
-                      <span>{formatDateShort(report.date)}</span>
-                      <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
-                      <span>{report.startTime}</span>
-                    </div>
-                  </div>
-                  <div className="flex gap-6">
-                    <div className="text-center">
-                      <p className="text-xs text-slate-500 mb-1.5 font-medium">Semangat</p>
-                      <StarRating rating={report.enthusiasmScore} readOnly size={18} />
-                    </div>
-                    <div className="text-center">
-                      <p className="text-xs text-slate-500 mb-1.5 font-medium">Fokus</p>
-                      <StarRating rating={report.focusScore} readOnly size={18} />
-                    </div>
-                    <div className="text-center">
-                      <p className="text-xs text-slate-500 mb-1.5 font-medium">Paham</p>
-                      <StarRating rating={report.understandingScore} readOnly size={18} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 }
