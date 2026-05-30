@@ -405,40 +405,6 @@ export class PdfService {
 
     doc.y = currentY + 10;
   }
-
-  private drawFooter(doc: PDFKit.PDFDocument) {
-    const pageHeight = doc.page.height;
-    const footerY = pageHeight - 35;
-    const centerX = doc.page.width / 2;
-
-    // Decorative top line
-    doc
-      .strokeColor('#D4BCFA')
-      .lineWidth(1)
-      .moveTo(40, footerY - 5)
-      .lineTo(doc.page.width - 40, footerY - 5)
-      .stroke();
-
-    // Brand name
-    doc
-      .fontSize(10)
-      .font('Helvetica-Bold')
-      .fillColor('#D4BCFA')
-      .text('Belajar with Miss Fika', 40, footerY, {
-        align: 'center',
-        width: doc.page.width - 80,
-      });
-
-    // Tagline
-    doc
-      .fontSize(7)
-      .font('Helvetica')
-      .fillColor('#9B8AC0')
-      .text('BELAJAR • BERKEMBANG • BERPRESTASI', 40, footerY + 13, {
-        align: 'center',
-        width: doc.page.width - 80,
-      });
-  }
 }
 
 export default new PdfService();
