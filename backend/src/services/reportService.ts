@@ -250,7 +250,8 @@ export class ReportService {
         ? reports.reduce((sum, r) => sum + r.understandingScore, 0) / totalSessions
         : 0;
 
-    const subjectsCovered = [...new Set(reports.map((r) => r.subject))];
+    // Get unique subjects (deduplicated) and sort alphabetically
+    const subjectsCovered = [...new Set(reports.map((r) => r.subject))].sort();
 
     const monthNames = [
       'Januari',
