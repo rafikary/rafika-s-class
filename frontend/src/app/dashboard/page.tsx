@@ -6,7 +6,7 @@ import { Users, FileText, Calendar, TrendingUp, DollarSign } from 'lucide-react'
 import { StarRating } from '@/components/ui/StarRating';
 import { dashboardApi } from '@/lib/api';
 import { DailyReport } from '@/types';
-import { formatDateShort } from '@/lib/utils';
+import { formatDateShort, cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -64,47 +64,62 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1">Ringkasan data les private</p>
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-3xl blur-3xl"></div>
+        <div className="relative">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Dashboard
+          </h1>
+          <p className="text-slate-600 mt-2 text-lg">Ringkasan data les private</p>
+        </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="group hover:scale-[1.02] transition-transform duration-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-slate-600">
               Total Siswa
             </CardTitle>
-            <Users className="h-5 w-5 text-gray-400" />
+            <div className="p-2.5 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg shadow-blue-500/30">
+              <Users className="h-5 w-5 text-white" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{stats.totalStudents}</div>
-            <p className="text-xs text-gray-500 mt-1">
+            <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              {stats.totalStudents}
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
               {stats.activeStudents} aktif
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="group hover:scale-[1.02] transition-transform duration-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-slate-600">
               Laporan Bulan Ini
             </CardTitle>
-            <FileText className="h-5 w-5 text-gray-400" />
+            <div className="p-2.5 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg shadow-purple-500/30">
+              <FileText className="h-5 w-5 text-white" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{stats.reportsThisMonth}</div>
-            <p className="text-xs text-gray-500 mt-1">pertemuan</p>
+            <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              {stats.reportsThisMonth}
+            </div>
+            <p className="text-xs text-slate-500 mt-1">pertemuan</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+        <Card className="group hover:scale-[1.02] transition-transform duration-200 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-green-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-green-700">
               Pendapatan Bulan Ini
             </CardTitle>
-            <DollarSign className="h-5 w-5 text-green-600" />
+            <div className="p-2.5 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg shadow-green-500/30">
+              <DollarSign className="h-5 w-5 text-white" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-700">
@@ -114,16 +129,20 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="group hover:scale-[1.02] transition-transform duration-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-slate-600">
               Total Laporan
             </CardTitle>
-            <TrendingUp className="h-5 w-5 text-gray-400" />
+            <div className="p-2.5 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl shadow-lg shadow-orange-500/30">
+              <TrendingUp className="h-5 w-5 text-white" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{stats.totalReports}</div>
-            <p className="text-xs text-gray-500 mt-1">sepanjang waktu</p>
+            <div className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+              {stats.totalReports}
+            </div>
+            <p className="text-xs text-slate-500 mt-1">sepanjang waktu</p>
           </CardContent>
         </Card>
       </div>
@@ -137,40 +156,40 @@ export default function DashboardPage() {
           <div className="grid gap-4 md:grid-cols-3">
             <Link
               href="/siswa/tambah"
-              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors"
+              className="group flex items-center gap-3 p-5 rounded-2xl border-2 border-slate-200 hover:border-blue-500 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 transition-all duration-200 hover:shadow-xl hover:shadow-blue-200/50"
             >
-              <div className="p-2 rounded-lg bg-blue-100">
-                <Users className="h-5 w-5 text-blue-600" />
+              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
+                <Users className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h3 className="font-medium">Tambah Siswa</h3>
-                <p className="text-sm text-gray-500">Daftarkan siswa baru</p>
+                <h3 className="font-semibold text-slate-900">Tambah Siswa</h3>
+                <p className="text-sm text-slate-500">Daftarkan siswa baru</p>
               </div>
             </Link>
 
             <Link
               href="/laporan/tambah"
-              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50 transition-colors"
+              className="group flex items-center gap-3 p-5 rounded-2xl border-2 border-slate-200 hover:border-green-500 hover:bg-gradient-to-br hover:from-green-50 hover:to-emerald-50 transition-all duration-200 hover:shadow-xl hover:shadow-green-200/50"
             >
-              <div className="p-2 rounded-lg bg-green-100">
-                <FileText className="h-5 w-5 text-green-600" />
+              <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-green-500/30 group-hover:scale-110 transition-transform">
+                <FileText className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h3 className="font-medium">Input Laporan</h3>
-                <p className="text-sm text-gray-500">Catat laporan harian</p>
+                <h3 className="font-semibold text-slate-900">Input Laporan</h3>
+                <p className="text-sm text-slate-500">Catat laporan harian</p>
               </div>
             </Link>
 
             <Link
               href="/laporan/bulanan"
-              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-colors"
+              className="group flex items-center gap-3 p-5 rounded-2xl border-2 border-slate-200 hover:border-purple-500 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 transition-all duration-200 hover:shadow-xl hover:shadow-purple-200/50"
             >
-              <div className="p-2 rounded-lg bg-purple-100">
-                <TrendingUp className="h-5 w-5 text-purple-600" />
+              <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform">
+                <TrendingUp className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h3 className="font-medium">Laporan Bulanan</h3>
-                <p className="text-sm text-gray-500">Lihat & export</p>
+                <h3 className="font-semibold text-slate-900">Laporan Bulanan</h3>
+                <p className="text-sm text-slate-500">Lihat & export</p>
               </div>
             </Link>
           </div>
@@ -181,56 +200,70 @@ export default function DashboardPage() {
       {incomeBreakdown.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Breakdown Pendapatan Per Siswa - Bulan Ini</CardTitle>
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg shadow-green-500/30">
+                <DollarSign className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <CardTitle>Breakdown Pendapatan Per Siswa</CardTitle>
+                <p className="text-sm text-slate-500 mt-1">Bulan ini dari absensi hadir</p>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+                  <tr className="border-b-2 border-slate-200">
+                    <th className="text-left py-4 px-4 text-sm font-semibold text-slate-700">
                       Nama Siswa
                     </th>
-                    <th className="text-center py-3 px-4 text-sm font-medium text-gray-600">
+                    <th className="text-center py-4 px-4 text-sm font-semibold text-slate-700">
                       Tarif/Sesi
                     </th>
-                    <th className="text-center py-3 px-4 text-sm font-medium text-gray-600">
+                    <th className="text-center py-4 px-4 text-sm font-semibold text-slate-700">
                       Jumlah Hadir
                     </th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-600">
+                    <th className="text-right py-4 px-4 text-sm font-semibold text-slate-700">
                       Total Pendapatan
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {incomeBreakdown.map((item) => (
-                    <tr key={item.studentId} className="border-b border-gray-100">
-                      <td className="py-3 px-4">
-                        <span className="font-medium text-gray-900">
+                  {incomeBreakdown.map((item, index) => (
+                    <tr 
+                      key={item.studentId} 
+                      className={cn(
+                        "border-b border-slate-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-colors",
+                        index % 2 === 0 ? "bg-white" : "bg-slate-50/50"
+                      )}
+                    >
+                      <td className="py-4 px-4">
+                        <span className="font-semibold text-slate-900">
                           {item.studentName}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-center text-gray-700">
+                      <td className="py-4 px-4 text-center text-slate-700">
                         Rp {item.tarif.toLocaleString('id-ID')}
                       </td>
-                      <td className="py-3 px-4 text-center">
-                        <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
+                      <td className="py-4 px-4 text-center">
+                        <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/30">
                           {item.sessionsCount}x
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-right">
-                        <span className="font-bold text-green-700">
+                      <td className="py-4 px-4 text-right">
+                        <span className="font-bold text-green-700 text-lg">
                           Rp {item.totalIncome.toLocaleString('id-ID')}
                         </span>
                       </td>
                     </tr>
                   ))}
-                  <tr className="bg-green-50">
-                    <td colSpan={3} className="py-3 px-4 text-right font-bold text-gray-900">
-                      Total Pendapatan:
+                  <tr className="bg-gradient-to-r from-green-100 to-emerald-100 border-t-2 border-green-300">
+                    <td colSpan={3} className="py-4 px-4 text-right font-bold text-slate-900 text-lg">
+                      Total Pendapatan Bulan Ini:
                     </td>
-                    <td className="py-3 px-4 text-right">
-                      <span className="font-bold text-lg text-green-700">
+                    <td className="py-4 px-4 text-right">
+                      <span className="font-bold text-2xl text-green-700">
                         Rp {stats.incomeThisMonth.toLocaleString('id-ID')}
                       </span>
                     </td>
@@ -245,37 +278,61 @@ export default function DashboardPage() {
       {/* Recent Reports */}
       <Card>
         <CardHeader>
-          <CardTitle>Laporan Terbaru</CardTitle>
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg shadow-purple-500/30">
+              <FileText className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <CardTitle>Laporan Terbaru</CardTitle>
+              <p className="text-sm text-slate-500 mt-1">5 laporan terakhir yang diinput</p>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           {recentReports.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">Belum ada laporan</p>
+            <div className="text-center py-12">
+              <div className="p-4 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <FileText className="h-8 w-8 text-slate-400" />
+              </div>
+              <p className="text-slate-500 font-medium">Belum ada laporan</p>
+              <p className="text-sm text-slate-400 mt-1">Mulai input laporan harian siswa</p>
+            </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {recentReports.map((report) => (
                 <div
                   key={report.id}
-                  className="flex items-center justify-between p-4 rounded-lg border border-gray-200"
+                  className="group flex items-center justify-between p-5 rounded-2xl border-2 border-slate-200 hover:border-purple-300 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-200 hover:shadow-lg hover:shadow-purple-200/50"
                 >
                   <div className="flex-1">
-                    <h4 className="font-medium">{report.student?.name}</h4>
-                    <p className="text-sm text-gray-600">{report.subject} - {report.topic}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {formatDateShort(report.date)} • {report.startTime}
-                    </p>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-purple-500/30">
+                        {report.student?.name.charAt(0)}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-slate-900">{report.student?.name}</h4>
+                        <p className="text-sm text-slate-600">{report.subject} - {report.topic}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span>{formatDateShort(report.date)}</span>
+                      <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
+                      <span>{report.startTime}</span>
+                    </div>
                   </div>
-                  <div className="flex gap-4">
+                  <div className="flex gap-6">
                     <div className="text-center">
-                      <p className="text-xs text-gray-500 mb-1">Semangat</p>
-                      <StarRating rating={report.enthusiasmScore} readOnly size={20} />
+                      <p className="text-xs text-slate-500 mb-1.5 font-medium">Semangat</p>
+                      <StarRating rating={report.enthusiasmScore} readOnly size={18} />
                     </div>
                     <div className="text-center">
-                      <p className="text-xs text-gray-500 mb-1">Fokus</p>
-                      <StarRating rating={report.focusScore} readOnly size={20} />
+                      <p className="text-xs text-slate-500 mb-1.5 font-medium">Fokus</p>
+                      <StarRating rating={report.focusScore} readOnly size={18} />
                     </div>
                     <div className="text-center">
-                      <p className="text-xs text-gray-500 mb-1">Paham</p>
-                      <StarRating rating={report.understandingScore} readOnly size={20} />
+                      <p className="text-xs text-slate-500 mb-1.5 font-medium">Paham</p>
+                      <StarRating rating={report.understandingScore} readOnly size={18} />
                     </div>
                   </div>
                 </div>

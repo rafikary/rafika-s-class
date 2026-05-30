@@ -18,10 +18,10 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className={inter.className}>
-        <div className="flex h-screen overflow-hidden bg-gray-50">
+        <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
           <Sidebar />
-          <main className="flex-1 overflow-y-auto lg:ml-64 pt-16 lg:pt-0">
-            <div className="container mx-auto p-6 max-w-7xl">
+          <main className="flex-1 lg:ml-72 pt-20 lg:pt-0">
+            <div className="p-6 lg:p-8">
               {children}
             </div>
           </main>

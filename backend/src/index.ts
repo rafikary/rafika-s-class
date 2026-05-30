@@ -11,7 +11,7 @@ const app: Express = express();
 // Middleware
 app.use(helmet()); // Security headers
 app.use(cors({ 
-  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
   credentials: true 
 })); // CORS
 app.use(express.json()); // Parse JSON bodies
