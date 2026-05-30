@@ -20,8 +20,14 @@ model Student {
   tarif                 Int?      // Tarif per pertemuan dalam Rupiah
   status                String    @default("active") // active | inactive
   meetingCount          Int       @default(0) @map("meeting_count") // Counter pertemuan hadir
+  
+  // Salary Configuration per Student
+  salaryScheduleType    String    @default("per_10_meetings") @map("salary_schedule_type") // per_10_meetings | monthly
+  monthlyPaymentDate    Int?      @map("monthly_payment_date") // 1-28 untuk tanggal pembayaran bulanan
+  
   lastReportSentAt      DateTime? @map("last_report_sent_at") // Kapan terakhir kirim laporan
   lastMonthlySentAt     DateTime? @map("last_monthly_sent_at") // Kapan terakhir kirim laporan bulanan
+  lastSalaryGeneratedAt DateTime? @map("last_salary_generated_at") // Kapan terakhir generate gaji
   createdAt             DateTime  @default(now()) @map("created_at")
   updatedAt             DateTime  @updatedAt @map("updated_at")
 
@@ -33,6 +39,7 @@ model Student {
   @@index([status])
   @@index([name])
   @@index([meetingCount])
+  @@index([salaryScheduleType])
   @@map("students")
 }
 

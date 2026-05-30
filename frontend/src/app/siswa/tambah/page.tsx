@@ -23,6 +23,8 @@ export default function TambahSiswaPage() {
     address: '',
     tarif: undefined as number | undefined,
     status: 'active',
+    salaryScheduleType: 'per_10_meetings' as 'per_10_meetings' | 'monthly',
+    monthlyPaymentDate: undefined as number | undefined,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -133,6 +135,57 @@ export default function TambahSiswaPage() {
               }
               placeholder="Contoh: 150000"
             />
+
+            <div className="border-t pt-4 mt-4">
+              <h3 className="text-sm font-semibold text-slate-700 mb-3">Konfigurasi Gaji</h3>
+              
+              <Select
+                label="Jadwal Pembayaran Gaji"
+                required
+                value={formData.salaryScheduleType}
+                onChange={(e) => {
+                  const value = e.target.value as 'per_10_meetings' | 'monthly';
+                  setFormData({ 
+                    ...formData, 
+                    salaryScheduleType: value,
+                    monthlyPaymentDate: value === 'monthly' ? 5 : undefined
+                  });
+                }}
+                options={[
+                  { value: 'per_10_meetings', label: 'Setiap 10x Pertemuan' },
+                  { value: 'monthly', label: 'Bulanan (Tanggal Tertentu)' },
+                ]}
+              />
+
+              {formData.salaryScheduleType === 'monthly' && (
+                <div className="mt-3">
+                  <Input
+                    label="Tanggal Pembayaran Setiap Bulan"
+                    type="number"
+                    min="1"
+                    max="28"
+                    required
+                    value={formData.monthlyPaymentDate || ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        monthlyPaymentDate: e.target.value ? parseInt(e.target.value) : undefined,
+                      })
+                    }
+                    placeholder="Contoh: 5 (untuk tanggal 5 setiap bulan)"
+                  />
+                  <p className="text-xs text-slate-500 mt-1">
+                    Gaji akan otomatis di-generate setiap tanggal {formData.monthlyPaymentDate || '...'} tiap bulan
+                  </p>
+                </div>
+              )}
+
+              <p className="text-xs text-slate-500 mt-2">
+                {formData.salaryScheduleType === 'per_10_meetings'
+                  ? 'Gaji otomatis di-generate ketika siswa mencapai 10x pertemuan'
+                  : `Gaji otomatis di-generate setiap tanggal ${formData.monthlyPaymentDate || '...'} berdasarkan pertemuan bulan sebelumnya`}
+              </p>
+            </div>
 
             <Select
               label="Status"
