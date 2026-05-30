@@ -200,5 +200,5 @@ function NotificationItem({
         </svg>
       </button>
     </div>
-  )}
+  );
 }
