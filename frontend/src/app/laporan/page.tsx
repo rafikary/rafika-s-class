@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Plus, Filter } from 'lucide-react';
+import { Plus, Filter, Edit, Trash2 } from 'lucide-react';
 import { reportsApi, studentsApi, handleApiError } from '@/lib/api';
 import { DailyReport, Student } from '@/types';
 import { formatDateShort, getScoreColor, getAttendanceBadgeColor, getAttendanceLabel } from '@/lib/utils';
@@ -60,23 +60,36 @@ export default function LaporanPage() {
     loadReports();
   };
 
+  const handleDelete = async (id: number, studentName: string) => {
+    if (!confirm(`Hapus laporan ${studentName}?`)) return;
+
+    try {
+      await reportsApi.delete(id);
+      alert('Laporan berhasil dihapus!');
+      loadReports();
+    } catch (error) {
+      alert('Gagal menghapus laporan: ' + handleApiError(error));
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Laporan Harian</h1>
-          <p className="text-gray-600 mt-1">Daftar laporan belajar siswa</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Laporan Harian</h1>
+          <p className="text-gray-600 mt-1 text-sm sm:text-base">Daftar laporan belajar siswa</p>
         </div>
-        <div className="flex gap-3">
-          <Link href="/laporan/bulanan">
-            <Button variant="secondary">
+        <div className="flex gap-2 sm:gap-3">
+          <Link href="/laporan/bulanan" className="flex-1 sm:flex-none">
+            <Button variant="secondary" className="w-full sm:w-auto text-sm">
               Laporan Bulanan
             </Button>
           </Link>
-          <Link href="/laporan/tambah">
-            <Button>
-              <Plus size={20} className="mr-2" />
-              Tambah Laporan
+          <Link href="/laporan/tambah" className="flex-1 sm:flex-none">
+            <Button className="w-full sm:w-auto text-sm">
+              <Plus size={18} className="mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Tambah Laporan</span>
+              <span className="sm:hidden">Tambah</span>
             </Button>
           </Link>
         </div>
@@ -155,46 +168,61 @@ export default function LaporanPage() {
           ) : (
             <div className="space-y-4">
               {reports.map((report) => (
-                <div key={report.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h4 className="font-semibold text-lg">{report.student?.name}</h4>
-                      <p className="text-sm text-gray-600">
+                <div key={report.id} className="border rounded-lg p-3 sm:p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-0 mb-3">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-base sm:text-lg">{report.student?.name}</h4>
+                      <p className="text-xs sm:text-sm text-gray-600">
                         {formatDateShort(report.date)} • {report.startTime} - {report.endTime}
                       </p>
                     </div>
-                    <Badge className={getAttendanceBadgeColor(report.attendanceStatus)}>
-                      {getAttendanceLabel(report.attendanceStatus)}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge className={getAttendanceBadgeColor(report.attendanceStatus)}>
+                        {getAttendanceLabel(report.attendanceStatus)}
+                      </Badge>
+                      <Link href={`/laporan/edit/${report.id}`}>
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                          <Edit size={16} />
+                        </Button>
+                      </Link>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => handleDelete(report.id, report.student?.name || '')}
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    </div>
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-4 mb-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-3">
                     <div>
-                      <p className="text-sm font-medium text-gray-700">Mata Pelajaran</p>
-                      <p className="text-gray-900">{report.subject}</p>
+                      <p className="text-xs sm:text-sm font-medium text-gray-700">Mata Pelajaran</p>
+                      <p className="text-sm sm:text-base text-gray-900">{report.subject}</p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-700">Topik</p>
-                      <p className="text-gray-900">{report.topic}</p>
+                      <p className="text-xs sm:text-sm font-medium text-gray-700">Topik</p>
+                      <p className="text-sm sm:text-base text-gray-900">{report.topic}</p>
                     </div>
                   </div>
 
-                  <div className="flex gap-4">
-                    <div className="text-center">
+                  <div className="flex gap-3 sm:gap-4">
+                    <div className="text-center flex-1">
                       <p className="text-xs text-gray-500">Semangat</p>
-                      <p className={`text-xl font-bold ${getScoreColor(report.enthusiasmScore)}`}>
+                      <p className={`text-lg sm:text-xl font-bold ${getScoreColor(report.enthusiasmScore)}`}>
                         {report.enthusiasmScore}
                       </p>
                     </div>
-                    <div className="text-center">
+                    <div className="text-center flex-1">
                       <p className="text-xs text-gray-500">Fokus</p>
-                      <p className={`text-xl font-bold ${getScoreColor(report.focusScore)}`}>
+                      <p className={`text-lg sm:text-xl font-bold ${getScoreColor(report.focusScore)}`}>
                         {report.focusScore}
                       </p>
                     </div>
-                    <div className="text-center">
+                    <div className="text-center flex-1">
                       <p className="text-xs text-gray-500">Pemahaman</p>
-                      <p className={`text-xl font-bold ${getScoreColor(report.understandingScore)}`}>
+                      <p className={`text-lg sm:text-xl font-bold ${getScoreColor(report.understandingScore)}`}>
                         {report.understandingScore}
                       </p>
                     </div>

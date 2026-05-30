@@ -56,14 +56,14 @@ export default function SiswaPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Data Siswa</h1>
-          <p className="text-gray-600 mt-1">Kelola data siswa les private</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Data Siswa</h1>
+          <p className="text-gray-600 mt-1 text-sm sm:text-base">Kelola data siswa les privat</p>
         </div>
-        <Link href="/siswa/tambah">
-          <Button>
-            <Plus size={20} className="mr-2" />
+        <Link href="/siswa/tambah" className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto">
+            <Plus size={18} className="mr-2" />
             Tambah Siswa
           </Button>
         </Link>

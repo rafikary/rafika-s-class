@@ -86,18 +86,19 @@ export default function GajianPage() {
     <div className="space-y-6">
       <div className="relative">
         <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-3xl blur-3xl"></div>
-        <div className="relative flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
               💰 Gajian
             </h1>
-            <p className="text-slate-600 mt-2 text-lg">
+            <p className="text-slate-600 mt-2 text-base sm:text-lg">
               Tracking gaji per 10x pertemuan & bulanan
             </p>
           </div>
-          <Button onClick={handleGenerateMonthly} variant="secondary">
+          <Button onClick={handleGenerateMonthly} variant="secondary" className="w-full sm:w-auto text-sm">
             <Calendar className="h-4 w-4 mr-2" />
-            Generate Gaji Bulan Lalu
+            <span className="hidden sm:inline">Generate Gaji Bulan Lalu</span>
+            <span className="sm:hidden">Generate Gaji</span>
           </Button>
         </div>
       </div>
