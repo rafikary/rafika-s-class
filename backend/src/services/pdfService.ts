@@ -58,11 +58,13 @@ export class PdfService {
         // Pipe PDF to response
         doc.pipe(res);
 
-        // WATERMARK - Large transparent background
-        this.drawWatermark(doc);
-
         // HEADER - Branded Title
         this.drawHeader(doc, data);
+
+        // WATERMARK - Large transparent background (after header, before content)
+        const currentY = doc.y; // Save current Y position
+        this.drawWatermark(doc);
+        doc.y = currentY; // Restore Y position after watermark
 
         // STUDENT INFO TABLE
         this.drawStudentInfo(doc, data);
@@ -301,8 +303,10 @@ export class PdfService {
       if (currentY > doc.page.height - 100) {
         doc.addPage({ layout: 'landscape' });
         
-        // Add watermark to new page
+        // Add watermark to new page (save Y position)
+        const savedY = doc.y;
         this.drawWatermark(doc);
+        doc.y = savedY;
         
         currentY = 40;
       }

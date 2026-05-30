@@ -169,10 +169,10 @@ export default function LaporanBulananPage() {
   const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Laporan Bulanan</h1>
-        <p className="text-gray-600 mt-1 text-sm sm:text-base">Lihat dan export laporan bulanan per siswa</p>
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Laporan Bulanan</h1>
+        <p className="text-gray-600 mt-1 text-xs sm:text-sm">Lihat dan export laporan bulanan per siswa</p>
       </div>
 
       {/* Filter */}
@@ -204,16 +204,18 @@ export default function LaporanBulananPage() {
             />
 
             <div className="flex items-end">
-              <Button onClick={loadMonthlyReport} disabled={!selectedStudent || loading} className="w-full">
+              <Button onClick={loadMonthlyReport} disabled={!selectedStudent || loading} className="w-full h-9 sm:h-10 text-sm">
                 {loading ? (
                   <>
-                    <Loader2 size={20} className="mr-2 animate-spin" />
-                    Loading...
+                    <Loader2 size={16} className="mr-2 animate-spin" />
+                    <span className="hidden sm:inline">Loading...</span>
+                    <span className="sm:hidden">Load...</span>
                   </>
                 ) : (
                   <>
-                    <FileText size={20} className="mr-2" />
-                    Lihat Rekap
+                    <FileText size={16} className="mr-2" />
+                    <span className="hidden sm:inline">Lihat Rekap</span>
+                    <span className="sm:hidden">Rekap</span>
                   </>
                 )}
               </Button>
@@ -228,12 +230,12 @@ export default function LaporanBulananPage() {
           {/* Summary */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3">
                 <div>
-                  <CardTitle>
+                  <CardTitle className="text-base sm:text-lg lg:text-xl">
                     Laporan {monthlyReport.student.name} - {monthlyReport.period.monthName} {monthlyReport.period.year}
                   </CardTitle>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
                     Kelas {monthlyReport.student.grade} • Orang Tua: {monthlyReport.student.parentName}
                   </p>
                 </div>
@@ -241,72 +243,79 @@ export default function LaporanBulananPage() {
                   <Button
                     onClick={handleSendToWhatsApp}
                     disabled={exporting || !monthlyReport.student.parentWhatsapp}
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
-                    size="lg"
+                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white h-9 sm:h-10 text-xs sm:text-sm"
                   >
-                    <MessageCircle size={20} className="mr-2" />
-                    {exporting ? 'Memproses...' : 'Kirim ke Wali Siswa 📱'}
+                    <MessageCircle size={16} className="mr-2" />
+                    {exporting ? 'Memproses...' : (
+                      <>
+                        <span className="hidden sm:inline">Kirim ke Wali Siswa 📱</span>
+                        <span className="sm:hidden">Wali Siswa</span>
+                      </>
+                    )}
                   </Button>
                   <Button
                     onClick={handleExportPdf}
                     disabled={exporting}
                     variant="secondary"
-                    size="lg"
+                    className="h-9 sm:h-10 text-xs sm:text-sm"
                   >
-                    <Download size={18} className="mr-2" />
+                    <Download size={16} className="mr-2" />
                     Backup PDF
                   </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
                 <div>
-                  <p className="text-sm text-gray-600">Total Pertemuan</p>
-                  <p className="text-3xl font-bold text-blue-600">
+                  <p className="text-xs sm:text-sm text-gray-600">Total Pertemuan</p>
+                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-600">
                     {monthlyReport.summary.totalSessions}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Rata-rata Semangat</p>
-                  <p className={`text-3xl font-bold ${getScoreColor(monthlyReport.summary.avgEnthusiasm)}`}>
+                  <p className="text-xs sm:text-sm text-gray-600">Rata-rata Semangat</p>
+                  <p className={`text-xl sm:text-2xl lg:text-3xl font-bold ${getScoreColor(monthlyReport.summary.avgEnthusiasm)}`}>
                     {monthlyReport.summary.avgEnthusiasm.toFixed(1)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Rata-rata Fokus</p>
-                  <p className={`text-3xl font-bold ${getScoreColor(monthlyReport.summary.avgFocus)}`}>
+                  <p className="text-xs sm:text-sm text-gray-600">Rata-rata Fokus</p>
+                  <p className={`text-xl sm:text-2xl lg:text-3xl font-bold ${getScoreColor(monthlyReport.summary.avgFocus)}`}>
                     {monthlyReport.summary.avgFocus.toFixed(1)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Rata-rata Pemahaman</p>
-                  <p className={`text-3xl font-bold ${getScoreColor(monthlyReport.summary.avgUnderstanding)}`}>
+                  <p className="text-xs sm:text-sm text-gray-600">
+                    <span className="hidden sm:inline">Rata-rata Pemahaman</span>
+                    <span className="sm:hidden">Pemahaman</span>
+                  </p>
+                  <p className={`text-xl sm:text-2xl lg:text-3xl font-bold ${getScoreColor(monthlyReport.summary.avgUnderstanding)}`}>
                     {monthlyReport.summary.avgUnderstanding.toFixed(1)}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="flex items-center gap-2">
-                  <Badge variant="success">Hadir: {monthlyReport.summary.present}</Badge>
+              <div className="mt-4 sm:mt-6 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+                <div className="flex items-center">
+                  <Badge variant="success" className="text-xs sm:text-sm">Hadir: {monthlyReport.summary.present}</Badge>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="warning">Izin: {monthlyReport.summary.excused}</Badge>
+                <div className="flex items-center">
+                  <Badge variant="warning" className="text-xs sm:text-sm">Izin: {monthlyReport.summary.excused}</Badge>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-orange-100 text-orange-800">Sakit: {monthlyReport.summary.sick}</Badge>
+                <div className="flex items-center">
+                  <Badge className="bg-orange-100 text-orange-800 text-xs sm:text-sm">Sakit: {monthlyReport.summary.sick}</Badge>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="danger">Batal: {monthlyReport.summary.cancelled}</Badge>
+                <div className="flex items-center">
+                  <Badge variant="danger" className="text-xs sm:text-sm">Batal: {monthlyReport.summary.cancelled}</Badge>
                 </div>
               </div>
 
-              <div className="mt-6">
-                <p className="text-sm text-gray-600 mb-2">Mata Pelajaran:</p>
+              <div className="mt-4 sm:mt-6">
+                <p className="text-xs sm:text-sm text-gray-600 mb-2">Mata Pelajaran:</p>
                 <div className="flex flex-wrap gap-2">
                   {monthlyReport.summary.subjectsCovered.map((subject) => (
-                    <Badge key={subject} variant="info">{subject}</Badge>
+                    <Badge key={subject} variant="info" className="text-xs sm:text-sm">{subject}</Badge>
                   ))}
                 </div>
               </div>
@@ -319,50 +328,50 @@ export default function LaporanBulananPage() {
               <CardTitle>Detail Pertemuan</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {monthlyReport.reports.map((report, index) => (
-                  <div key={report.id} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-3">
+                  <div key={report.id} className="border rounded-lg p-3 sm:p-4">
+                    <div className="flex items-start justify-between mb-2 sm:mb-3">
                       <div>
-                        <h4 className="font-semibold text-lg">
+                        <h4 className="font-semibold text-sm sm:text-base lg:text-lg">
                           #{index + 1} - {formatDateShort(report.date)}
                         </h4>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-xs sm:text-sm text-gray-600">
                           {report.startTime} - {report.endTime}
                         </p>
                       </div>
-                      <Badge className={getAttendanceBadgeColor(report.attendanceStatus)}>
+                      <Badge className={`${getAttendanceBadgeColor(report.attendanceStatus)} text-xs sm:text-sm`}>
                         {getAttendanceLabel(report.attendanceStatus)}
                       </Badge>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-4 mb-3">
+                    <div className="grid md:grid-cols-2 gap-3 sm:gap-4 mb-2 sm:mb-3">
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Mata Pelajaran</p>
-                        <p className="text-gray-900">{report.subject}</p>
+                        <p className="text-xs sm:text-sm font-medium text-gray-700">Mata Pelajaran</p>
+                        <p className="text-sm sm:text-base text-gray-900">{report.subject}</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Topik</p>
-                        <p className="text-gray-900">{report.topic}</p>
+                        <p className="text-xs sm:text-sm font-medium text-gray-700">Topik</p>
+                        <p className="text-sm sm:text-base text-gray-900">{report.topic}</p>
                       </div>
                     </div>
 
-                    <div className="flex gap-4 mb-3">
+                    <div className="flex gap-3 sm:gap-4 mb-2 sm:mb-3">
                       <div className="text-center">
                         <p className="text-xs text-gray-500">Semangat</p>
-                        <p className={`text-xl font-bold ${getScoreColor(report.enthusiasmScore)}`}>
+                        <p className={`text-lg sm:text-xl font-bold ${getScoreColor(report.enthusiasmScore)}`}>
                           {report.enthusiasmScore}
                         </p>
                       </div>
                       <div className="text-center">
                         <p className="text-xs text-gray-500">Fokus</p>
-                        <p className={`text-xl font-bold ${getScoreColor(report.focusScore)}`}>
+                        <p className={`text-lg sm:text-xl font-bold ${getScoreColor(report.focusScore)}`}>
                           {report.focusScore}
                         </p>
                       </div>
                       <div className="text-center">
                         <p className="text-xs text-gray-500">Pemahaman</p>
-                        <p className={`text-xl font-bold ${getScoreColor(report.understandingScore)}`}>
+                        <p className={`text-lg sm:text-xl font-bold ${getScoreColor(report.understandingScore)}`}>
                           {report.understandingScore}
                         </p>
                       </div>
@@ -370,22 +379,22 @@ export default function LaporanBulananPage() {
 
                     {report.homework && (
                       <div className="mb-2">
-                        <p className="text-sm font-medium text-gray-700">PR/Tugas</p>
-                        <p className="text-gray-900">{report.homework}</p>
+                        <p className="text-xs sm:text-sm font-medium text-gray-700">PR/Tugas</p>
+                        <p className="text-sm sm:text-base text-gray-900">{report.homework}</p>
                       </div>
                     )}
 
                     {report.progressNotes && (
                       <div className="mb-2">
-                        <p className="text-sm font-medium text-gray-700">Catatan Perkembangan</p>
-                        <p className="text-gray-900">{report.progressNotes}</p>
+                        <p className="text-xs sm:text-sm font-medium text-gray-700">Catatan Perkembangan</p>
+                        <p className="text-sm sm:text-base text-gray-900">{report.progressNotes}</p>
                       </div>
                     )}
 
                     {report.parentNotes && (
                       <div>
-                        <p className="text-sm font-medium text-gray-700">Catatan untuk Orang Tua</p>
-                        <p className="text-gray-900">{report.parentNotes}</p>
+                        <p className="text-xs sm:text-sm font-medium text-gray-700">Catatan untuk Orang Tua</p>
+                        <p className="text-sm sm:text-base text-gray-900">{report.parentNotes}</p>
                       </div>
                     )}
                   </div>
