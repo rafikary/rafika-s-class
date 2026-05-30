@@ -8,10 +8,28 @@ import { errorHandler } from './utils/errorHandler';
 
 const app: Express = express();
 
+// CORS configuration - allow multiple origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001', 
+  'http://localhost:3002',
+  process.env.CORS_ORIGIN || '', // From .env (Vercel URL)
+].filter(Boolean);
+
 // Middleware
 app.use(helmet()); // Security headers
 app.use(cors({ 
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is allowed or is a Vercel deployment
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true 
 })); // CORS
 app.use(express.json()); // Parse JSON bodies
