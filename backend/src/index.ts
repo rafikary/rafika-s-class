@@ -10,7 +10,10 @@ const app: Express = express();
 
 // Middleware
 app.use(helmet()); // Security headers
-app.use(cors({ origin: config.corsOrigin })); // CORS
+app.use(cors({ 
+  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  credentials: true 
+})); // CORS
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use(morgan('dev')); // Request logging

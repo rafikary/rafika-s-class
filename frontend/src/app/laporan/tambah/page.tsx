@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
 import { ArrowLeft } from 'lucide-react';
+import { StarRating } from '@/components/ui/StarRating';
 import Link from 'next/link';
 import { reportsApi, studentsApi, handleApiError } from '@/lib/api';
 import { Student } from '@/types';
@@ -166,61 +167,49 @@ export default function TambahLaporanPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Penilaian (Skala 1-5)</CardTitle>
+            <CardTitle>Penilaian</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Semangat Belajar: {formData.enthusiasmScore}
+                Semangat Belajar
               </label>
-              <input
-                type="range"
-                min="1"
-                max="5"
-                value={formData.enthusiasmScore}
-                onChange={(e) => setFormData({ ...formData, enthusiasmScore: parseInt(e.target.value) })}
-                className="w-full"
+              <StarRating
+                rating={formData.enthusiasmScore}
+                onChange={(rating) => setFormData({ ...formData, enthusiasmScore: rating })}
+                size={32}
               />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>1 - Kurang</span>
-                <span>5 - Excellent</span>
-              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Klik bintang untuk memberi nilai
+              </p>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Fokus/Konsentrasi: {formData.focusScore}
+                Fokus/Konsentrasi
               </label>
-              <input
-                type="range"
-                min="1"
-                max="5"
-                value={formData.focusScore}
-                onChange={(e) => setFormData({ ...formData, focusScore: parseInt(e.target.value) })}
-                className="w-full"
+              <StarRating
+                rating={formData.focusScore}
+                onChange={(rating) => setFormData({ ...formData, focusScore: rating })}
+                size={32}
               />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>1 - Kurang</span>
-                <span>5 - Excellent</span>
-              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Klik bintang untuk memberi nilai
+              </p>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Pemahaman Materi: {formData.understandingScore}
+                Pemahaman Materi
               </label>
-              <input
-                type="range"
-                min="1"
-                max="5"
-                value={formData.understandingScore}
-                onChange={(e) => setFormData({ ...formData, understandingScore: parseInt(e.target.value) })}
-                className="w-full"
+              <StarRating
+                rating={formData.understandingScore}
+                onChange={(rating) => setFormData({ ...formData, understandingScore: rating })}
+                size={32}
               />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>1 - Kurang</span>
-                <span>5 - Excellent</span>
-              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Klik bintang untuk memberi nilai
+              </p>
             </div>
           </CardContent>
         </Card>

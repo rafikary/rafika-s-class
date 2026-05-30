@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, Calendar, FileText, Menu, X } from 'lucide-react';
+import { Home, Users, Calendar, FileText, DollarSign, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -11,6 +11,7 @@ const navigation = [
   { name: 'Data Siswa', href: '/siswa', icon: Users },
   { name: 'Jadwal', href: '/jadwal', icon: Calendar },
   { name: 'Laporan', href: '/laporan', icon: FileText },
+  { name: 'Keuangan', href: '/laporan/keuangan', icon: DollarSign },
 ];
 
 export default function Sidebar() {

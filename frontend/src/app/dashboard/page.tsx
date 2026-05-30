@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Users, FileText, Calendar, TrendingUp, DollarSign } from 'lucide-react';
+import { StarRating } from '@/components/ui/StarRating';
 import { dashboardApi } from '@/lib/api';
 import { DailyReport } from '@/types';
 import { formatDateShort } from '@/lib/utils';
@@ -16,6 +17,7 @@ export default function DashboardPage() {
     reportsThisMonth: 0,
     incomeThisMonth: 0,
   });
+  const [incomeBreakdown, setIncomeBreakdown] = useState<any[]>([]);
   const [recentReports, setRecentReports] = useState<DailyReport[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,6 +40,8 @@ export default function DashboardPage() {
         reportsThisMonth: statsData.reportsThisMonth,
         incomeThisMonth: statsData.incomeThisMonth,
       });
+
+      setIncomeBreakdown(statsData.incomeBreakdown || []);
 
       setRecentReports(recent);
     } catch (error) {
@@ -173,6 +177,71 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
+      {/* Income Breakdown */}
+      {incomeBreakdown.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Breakdown Pendapatan Per Siswa - Bulan Ini</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+                      Nama Siswa
+                    </th>
+                    <th className="text-center py-3 px-4 text-sm font-medium text-gray-600">
+                      Tarif/Sesi
+                    </th>
+                    <th className="text-center py-3 px-4 text-sm font-medium text-gray-600">
+                      Jumlah Hadir
+                    </th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-600">
+                      Total Pendapatan
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {incomeBreakdown.map((item) => (
+                    <tr key={item.studentId} className="border-b border-gray-100">
+                      <td className="py-3 px-4">
+                        <span className="font-medium text-gray-900">
+                          {item.studentName}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-center text-gray-700">
+                        Rp {item.tarif.toLocaleString('id-ID')}
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
+                          {item.sessionsCount}x
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <span className="font-bold text-green-700">
+                          Rp {item.totalIncome.toLocaleString('id-ID')}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="bg-green-50">
+                    <td colSpan={3} className="py-3 px-4 text-right font-bold text-gray-900">
+                      Total Pendapatan:
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <span className="font-bold text-lg text-green-700">
+                        Rp {stats.incomeThisMonth.toLocaleString('id-ID')}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Recent Reports */}
       <Card>
         <CardHeader>
@@ -195,18 +264,18 @@ export default function DashboardPage() {
                       {formatDateShort(report.date)} • {report.startTime}
                     </p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-4">
                     <div className="text-center">
-                      <p className="text-xs text-gray-500">Semangat</p>
-                      <p className="text-lg font-bold text-blue-600">{report.enthusiasmScore}</p>
+                      <p className="text-xs text-gray-500 mb-1">Semangat</p>
+                      <StarRating rating={report.enthusiasmScore} readOnly size={20} />
                     </div>
                     <div className="text-center">
-                      <p className="text-xs text-gray-500">Fokus</p>
-                      <p className="text-lg font-bold text-green-600">{report.focusScore}</p>
+                      <p className="text-xs text-gray-500 mb-1">Fokus</p>
+                      <StarRating rating={report.focusScore} readOnly size={20} />
                     </div>
                     <div className="text-center">
-                      <p className="text-xs text-gray-500">Paham</p>
-                      <p className="text-lg font-bold text-purple-600">{report.understandingScore}</p>
+                      <p className="text-xs text-gray-500 mb-1">Paham</p>
+                      <StarRating rating={report.understandingScore} readOnly size={20} />
                     </div>
                   </div>
                 </div>

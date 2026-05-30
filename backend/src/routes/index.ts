@@ -3,6 +3,7 @@ import studentRoutes from './studentRoutes';
 import scheduleRoutes from './scheduleRoutes';
 import reportRoutes from './reportRoutes';
 import dashboardRoutes from './dashboardRoutes';
+import financialRoutes from './financialRoutes';
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use('/students', studentRoutes);
 router.use('/schedules', scheduleRoutes);
 router.use('/reports', reportRoutes);
 router.use('/dashboard', dashboardRoutes);
+router.use('/financial', financialRoutes);
 
 export default router;

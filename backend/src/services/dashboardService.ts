@@ -47,6 +47,35 @@ export class DashboardService {
       return sum + (report.student.tarif || 0);
     }, 0);
 
+    // Breakdown income per student
+    const incomeByStudent: Record<number, {
+      studentId: number;
+      studentName: string;
+      tarif: number;
+      sessionsCount: number;
+      totalIncome: number;
+    }> = {};
+
+    presentReports.forEach((report) => {
+      const studentId = report.student.id;
+      if (!incomeByStudent[studentId]) {
+        incomeByStudent[studentId] = {
+          studentId: report.student.id,
+          studentName: report.student.name,
+          tarif: report.student.tarif || 0,
+          sessionsCount: 0,
+          totalIncome: 0,
+        };
+      }
+      incomeByStudent[studentId].sessionsCount += 1;
+      incomeByStudent[studentId].totalIncome += report.student.tarif || 0;
+    });
+
+    // Convert to array and sort by total income descending
+    const incomeBreakdown = Object.values(incomeByStudent).sort(
+      (a, b) => b.totalIncome - a.totalIncome
+    );
+
     // Count attendance by status this month
     const attendanceStats = {
       present: reportsThisMonth.filter((r) => r.attendanceStatus === 'present').length,
@@ -62,6 +91,7 @@ export class DashboardService {
       reportsThisMonth: reportsThisMonth.length,
       totalIncome,
       incomeThisMonth: totalIncome,
+      incomeBreakdown,
       attendanceStats,
       period: {
         month: currentMonth,

@@ -163,4 +163,25 @@ export const dashboardApi = {
   },
 };
 
+// Financial API
+export const financialApi = {
+  getReport: async (params?: { month?: number; year?: number }): Promise<any> => {
+    const { data } = await api.get<ApiResponse<any>>('/financial/report', { params });
+    return data.data!;
+  },
+
+  updatePaymentStatus: async (reportId: number, paymentStatus: 'paid' | 'unpaid'): Promise<DailyReport> => {
+    const { data } = await api.put<ApiResponse<DailyReport>>(
+      `/financial/${reportId}/payment-status`,
+      { paymentStatus }
+    );
+    return data.data!;
+  },
+
+  markMultipleAsPaid: async (reportIds: number[]): Promise<any> => {
+    const { data } = await api.post<ApiResponse<any>>('/financial/mark-paid', { reportIds });
+    return data.data!;
+  },
+};
+
 export default api;

@@ -64,6 +64,7 @@ model DailyReport {
   progressNotes       String?  @map("progress_notes")
   parentNotes         String?  @map("parent_notes")
   attendanceStatus    String   @default("present") @map("attendance_status") // present | excused | sick | cancelled
+  paymentStatus       String   @default("unpaid") @map("payment_status") // paid | unpaid
   createdAt           DateTime @default(now()) @map("created_at")
   updatedAt           DateTime @updatedAt @map("updated_at")
 
@@ -73,5 +74,6 @@ model DailyReport {
   @@index([studentId])
   @@index([date])
   @@index([studentId, date])
+  @@index([paymentStatus])
   @@map("daily_reports")
 }
