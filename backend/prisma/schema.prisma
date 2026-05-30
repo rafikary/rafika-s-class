@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id             Int       @id @default(autoincrement())
+  name           String
+  grade          String
+  parentName     String    @map("parent_name")
+  parentWhatsapp String?   @map("parent_whatsapp")
+  address        String?
+  tarif          Int?      // Tarif per pertemuan dalam Rupiah
+  status         String    @default("active") // active | inactive
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  dailyReports   DailyReport[]
+  schedules      Schedule[]
+
+  @@index([status])
+  @@index([name])
+  @@map("students")
+}
+
+model Schedule {
+  id          Int      @id @default(autoincrement())
+  studentId   Int      @map("student_id")
+  dayOfWeek   String   @map("day_of_week") // Senin, Selasa, dst
+  startTime   String   @map("start_time") // HH:MM format
+  endTime     String   @map("end_time")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([dayOfWeek])
+  @@map("schedules")
+}
+
+model DailyReport {
+  id                  Int      @id @default(autoincrement())
+  studentId           Int      @map("student_id")
+  date                DateTime
+  startTime           String   @map("start_time") // HH:MM format
+  endTime             String   @map("end_time")
+  subject             String   // Matematika, IPA, Bahasa Indonesia
+  topic               String
+  enthusiasmScore     Int      @map("enthusiasm_score") // 1-5
+  focusScore          Int      @map("focus_score") // 1-5
+  understandingScore  Int      @map("understanding_score") // 1-5
+  homework            String?
+  progressNotes       String?  @map("progress_notes")
+  parentNotes         String?  @map("parent_notes")
+  attendanceStatus    String   @default("present") @map("attendance_status") // present | excused | sick | cancelled
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  student             Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([date])
+  @@index([studentId, date])
+  @@map("daily_reports")
+}
