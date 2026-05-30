@@ -12,11 +12,6 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     return <div className="w-full">{children}</div>;
   }
 
-  // Admin mode - redirect to laporan page (admin shouldn't use this page directly)
-  if (typeof window !== 'undefined') {
-    window.location.href = '/laporan/bulanan';
-  }
-
   return <div className="w-full">{children}</div>;
 }
 

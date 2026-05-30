@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { Home, Users, Calendar, FileText, DollarSign, Menu, X, BookOpen, Sparkles, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -18,7 +18,16 @@ const navigation = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const isDownloadPage = pathname.startsWith('/download-pdf');
+  const isLoginPage = pathname === '/login';
+  const isParentMode = isDownloadPage && searchParams.get('student');
+
+  if (isDownloadPage || isLoginPage || isParentMode) {
+    return null;
+  }
 
   return (
     <>

@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Download, MessageCircle, FileText, Loader2 } from 'lucide-react';
 import { reportsApi, studentsApi, handleApiError } from '@/lib/api';
 import { Student, MonthlyReport } from '@/types';
-import { MONTHS, getScoreColor, formatDateShort, getAttendanceBadgeColor, getAttendanceLabel } from '@/lib/utils';
+import { getScoreColor, formatDateShort, getAttendanceBadgeColor, getAttendanceLabel } from '@/lib/utils';
 
 export default function LaporanBulananPage() {
   const [students, setStudents] = useState<Student[]>([]);
