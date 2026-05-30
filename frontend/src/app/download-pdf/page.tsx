@@ -17,16 +17,23 @@ function DownloadPdfContent() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [downloading, setDownloading] = useState(false);
+  const [isLocked, setIsLocked] = useState(false); // Lock mode for parents
+  const [studentInfo, setStudentInfo] = useState<Student | null>(null);
 
   useEffect(() => {
-    loadStudents();
-    
     // Pre-fill from query params if available
     const studentId = searchParams.get('student');
     const month = searchParams.get('month');
     const year = searchParams.get('year');
     
-    if (studentId) setSelectedStudent(studentId);
+    if (studentId) {
+      setSelectedStudent(studentId);
+      setIsLocked(true); // Lock when coming from shared link
+      loadSingleStudent(parseInt(studentId));
+    } else {
+      loadStudents();
+    }
+    
     if (month) setSelectedMonth(parseInt(month));
     if (year) setSelectedYear(parseInt(year));
   }, [searchParams]);
@@ -36,13 +43,22 @@ function DownloadPdfContent() {
       const data = await studentsApi.getAll();
       setStudents(data);
     } catch (error) {
-      alert('Gagal memuat data siswa: ' + handleApiError(error));
+      alert('Failed to load student data: ' + handleApiError(error));
+    }
+  };
+
+  const loadSingleStudent = async (studentId: number) => {
+    try {
+      const data = await studentsApi.getById(studentId);
+      setStudentInfo(data);
+    } catch (error) {
+      alert('Failed to load student data: ' + handleApiError(error));
     }
   };
 
   const handleDownloadPdf = async () => {
     if (!selectedStudent) {
-      alert('Pilih siswa terlebih dahulu');
+      alert('Please select a student first');
       return;
     }
 
@@ -63,9 +79,9 @@ function DownloadPdfContent() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      alert('✅ Laporan PDF berhasil diunduh!');
+      alert('✅ PDF report downloaded successfully!');
     } catch (error) {
-      alert('❌ Gagal download PDF: ' + handleApiError(error));
+      alert('❌ Failed to download PDF: ' + handleApiError(error));
     } finally {
       setDownloading(false);
     }
@@ -96,20 +112,38 @@ function DownloadPdfContent() {
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nama Siswa <span className="text-red-500">*</span>
+                Student Name <span className="text-red-500">*</span>
               </label>
-              <Select
-                value={selectedStudent}
-                onChange={(e) => setSelectedStudent(e.target.value)}
-                options={students.map((s) => ({ value: s.id, label: `${s.name} (${s.grade})` }))}
-                className="w-full"
-              />
+              {isLocked && studentInfo ? (
+                <div className="px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm font-medium text-gray-900">
+                    {studentInfo.name} ({studentInfo.grade})
+                  </p>
+                  {studentInfo.salaryScheduleType === 'monthly' && studentInfo.monthlyPaymentDate && (
+                    <p className="text-xs text-gray-600 mt-1">
+                      Payment: Monthly on the {studentInfo.monthlyPaymentDate}th
+                    </p>
+                  )}
+                  {studentInfo.salaryScheduleType === 'per_10_meetings' && (
+                    <p className="text-xs text-gray-600 mt-1">
+                      Payment: Every 10 meetings
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <Select
+                  value={selectedStudent}
+                  onChange={(e) => setSelectedStudent(e.target.value)}
+                  options={students.map((s) => ({ value: s.id, label: `${s.name} (${s.grade})` }))}
+                  className="w-full"
+                />
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Bulan <span className="text-red-500">*</span>
+                  Month <span className="text-red-500">*</span>
                 </label>
                 <Select
                   value={selectedMonth}
@@ -121,7 +155,7 @@ function DownloadPdfContent() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tahun <span className="text-red-500">*</span>
+                  Year <span className="text-red-500">*</span>
                 </label>
                 <Select
                   value={selectedYear}
@@ -132,6 +166,16 @@ function DownloadPdfContent() {
               </div>
             </div>
 
+            {isLocked && studentInfo?.salaryScheduleType === 'monthly' && studentInfo.monthlyPaymentDate && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p className="text-xs text-yellow-800">
+                  <strong>Note:</strong> For monthly payment on the {studentInfo.monthlyPaymentDate}th, 
+                  the report covers from the {studentInfo.monthlyPaymentDate === 1 ? '1st' : `${studentInfo.monthlyPaymentDate + 1}th`} of the previous month 
+                  to the {studentInfo.monthlyPaymentDate}th of the selected month.
+                </p>
+              </div>
+            )}
+
             <Button
               onClick={handleDownloadPdf}
               disabled={downloading || !selectedStudent}
@@ -140,12 +184,12 @@ function DownloadPdfContent() {
               {downloading ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Mengunduh Laporan...
+                  Downloading Report...
                 </>
               ) : (
                 <>
                   <Download className="mr-2 h-5 w-5" />
-                  Download Laporan PDF
+                  Download PDF Report
                 </>
               )}
             </Button>
@@ -159,26 +203,26 @@ function DownloadPdfContent() {
               <span className="text-white text-xs font-bold">i</span>
             </div>
             <div className="flex-1">
-              <h3 className="text-sm font-semibold text-gray-900 mb-2">Informasi Laporan</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">Report Information</h3>
               <p className="text-xs text-gray-600 leading-relaxed">
-                Laporan berisi ringkasan belajar siswa selama satu bulan, termasuk:
+                The report contains a summary of the student's learning for one month, including:
               </p>
               <ul className="mt-3 space-y-1.5 text-xs text-gray-600">
                 <li className="flex items-center gap-2">
                   <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
-                  Total pertemuan & kehadiran
+                  Total meetings & attendance
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
-                  Rata-rata nilai semangat, fokus & pemahaman
+                  Average enthusiasm, focus & understanding scores
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
-                  Daftar materi yang dipelajari
+                  List of subjects studied
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
-                  Catatan perkembangan per pertemuan
+                  Progress notes per meeting
                 </li>
               </ul>
             </div>
@@ -200,7 +244,7 @@ export default function DownloadPdfPage() {
       <div className="min-h-screen bg-white py-8 px-4">
         <div className="max-w-lg mx-auto text-center mt-20">
           <Loader2 className="w-10 h-10 animate-spin mx-auto text-blue-600" />
-          <p className="mt-4 text-sm text-gray-600">Memuat halaman...</p>
+          <p className="mt-4 text-sm text-gray-600">Loading page...</p>
         </div>
       </div>
     }>
