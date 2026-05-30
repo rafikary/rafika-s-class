@@ -42,8 +42,8 @@ export class PdfService {
         const doc = new PDFDocument({
           size: 'A4',
           margins: {
-            top: 40,
-            bottom: 40,
+            top: 60,
+            bottom: 50,
             left: 40,
             right: 40,
           },
@@ -58,7 +58,10 @@ export class PdfService {
         // Pipe PDF to response
         doc.pipe(res);
 
-        // HEADER - Simple Title
+        // WATERMARK - Large transparent background
+        this.drawWatermark(doc);
+
+        // HEADER - Branded Title
         this.drawHeader(doc, data);
 
         // STUDENT INFO TABLE
@@ -84,26 +87,98 @@ export class PdfService {
     });
   }
 
-  private drawHeader(doc: PDFKit.PDFDocument, data: MonthlyReportData) {
-    // Simple header with title
+  private drawWatermark(doc: PDFKit.PDFDocument) {
+    // Save current state
+    doc.save();
+
+    // Calculate center position
+    const centerX = doc.page.width / 2;
+    const centerY = doc.page.height / 2;
+
+    // Draw large transparent "Belajar with Miss Fika" watermark
+    doc
+      .opacity(0.05)
+      .fontSize(48)
+      .font('Helvetica-Bold')
+      .fillColor('#D4BCFA');
+
+    // Main text
+    doc.text('Belajar with', centerX - 200, centerY - 60, {
+      width: 400,
+      align: 'center',
+    });
+
+    doc
+      .fontSize(60)
+      .fillColor('#FFB8D1')
+      .text('Miss Fika', centerX - 200, centerY - 10, {
+        width: 400,
+        align: 'center',
+      });
+
+    // Subtitle
     doc
       .fontSize(16)
+      .fillColor('#A8D8F0')
+      .text('BELAJAR • BERKEMBANG • BERPRESTASI', centerX - 200, centerY + 60, {
+        width: 400,
+        align: 'center',
+      });
+
+    // Restore state
+    doc.restore();
+  }
+
+  private drawHeader(doc: PDFKit.PDFDocument, data: MonthlyReportData) {
+    // Branded header with logo text
+    const centerX = doc.page.width / 2;
+    
+    // Brand name at top
+    doc
+      .fontSize(14)
       .font('Helvetica-Bold')
-      .fillColor('#000000')
-      .text('LAPORAN PEMBELAJARAN BULANAN', 40, 40, {
+      .fillColor('#D4BCFA')
+      .text('Belajar with Miss Fika', 40, 50, {
+        align: 'center',
+        width: doc.page.width - 80,
+      });
+
+    // Decorative line
+    doc
+      .strokeColor('#FFB8D1')
+      .lineWidth(2)
+      .moveTo(centerX - 100, 68)
+      .lineTo(centerX + 100, 68)
+      .stroke();
+
+    // Main title
+    doc
+      .fontSize(18)
+      .font('Helvetica-Bold')
+      .fillColor('#7B68B0')
+      .text('LAPORAN PEMBELAJARAN BULANAN', 40, 75, {
         align: 'center',
         width: doc.page.width - 80,
       });
 
     doc
-      .fontSize(10)
+      .fontSize(11)
       .font('Helvetica')
-      .text(`Periode: ${data.period.month} ${data.period.year}`, 40, 60, {
+      .fillColor('#9B8AC0')
+      .text(`Periode: ${data.period.month} ${data.period.year}`, 40, 95, {
         align: 'center',
         width: doc.page.width - 80,
       });
 
-    doc.y = 85;
+    // Bottom decorative line
+    doc
+      .strokeColor('#A8D8F0')
+      .lineWidth(1)
+      .moveTo(40, 112)
+      .lineTo(doc.page.width - 40, 112)
+      .stroke();
+
+    doc.y = 125;
   }
 
   private drawStudentInfo(doc: PDFKit.PDFDocument, data: MonthlyReportData) {
@@ -225,6 +300,10 @@ export class PdfService {
       // Check if need new page
       if (currentY > doc.page.height - 100) {
         doc.addPage({ layout: 'landscape' });
+        
+        // Add watermark to new page
+        this.drawWatermark(doc);
+        
         currentY = 40;
       }
 
@@ -325,13 +404,33 @@ export class PdfService {
 
   private drawFooter(doc: PDFKit.PDFDocument) {
     const pageHeight = doc.page.height;
-    const footerY = pageHeight - 30;
+    const footerY = pageHeight - 35;
+    const centerX = doc.page.width / 2;
 
+    // Decorative top line
     doc
-      .fontSize(8)
-      .font('Helvetica')
-      .fillColor('#6B7280')
+      .strokeColor('#D4BCFA')
+      .lineWidth(1)
+      .moveTo(40, footerY - 5)
+      .lineTo(doc.page.width - 40, footerY - 5)
+      .stroke();
+
+    // Brand name
+    doc
+      .fontSize(10)
+      .font('Helvetica-Bold')
+      .fillColor('#D4BCFA')
       .text('Belajar with Miss Fika', 40, footerY, {
+        align: 'center',
+        width: doc.page.width - 80,
+      });
+
+    // Tagline
+    doc
+      .fontSize(7)
+      .font('Helvetica')
+      .fillColor('#9B8AC0')
+      .text('BELAJAR • BERKEMBANG • BERPRESTASI', 40, footerY + 13, {
         align: 'center',
         width: doc.page.width - 80,
       });
