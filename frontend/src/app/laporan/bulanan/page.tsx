@@ -108,6 +108,32 @@ export default function LaporanBulananPage() {
     }
   };
 
+  const handleSendToWhatsApp = async () => {
+    if (!selectedStudent || !monthlyReport) return;
+
+    if (!monthlyReport.student.parentWhatsapp) {
+      alert('Nomor WhatsApp orang tua tidak tersedia. Silakan lengkapi data siswa terlebih dahulu.');
+      return;
+    }
+
+    try {
+      setExporting(true);
+      const response = await reportsApi.getWhatsAppLink(parseInt(selectedStudent), {
+        month: selectedMonth,
+        year: selectedYear,
+      });
+
+      // Open WhatsApp with pre-filled message
+      window.open(response.whatsappUrl, '_blank');
+      
+      alert('✅ WhatsApp terbuka! Tinggal klik kirim untuk mengirim laporan ke orang tua.');
+    } catch (error) {
+      alert('Gagal generate link WhatsApp: ' + handleApiError(error));
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const handleGetWhatsAppLink = async () => {
     if (!selectedStudent) return;
 
@@ -211,31 +237,15 @@ export default function LaporanBulananPage() {
                     Kelas {monthlyReport.student.grade} • Orang Tua: {monthlyReport.student.parentName}
                   </p>
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={handleExportPdf}
-                    disabled={exporting}
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                  >
-                    <Download size={20} className="mr-2" />
-                    {exporting ? 'Exporting...' : 'Download PDF 📄'}
-                  </Button>
-                  <Button
-                    onClick={handleExportExcel}
-                    disabled={exporting}
-                    variant="secondary"
-                  >
-                    <Download size={20} className="mr-2" />
-                    {exporting ? 'Exporting...' : 'Export Excel'}
-                  </Button>
-                  <Button
-                    onClick={handleGetWhatsAppLink}
-                    disabled={!monthlyReport.student.parentWhatsapp}
-                  >
-                    <MessageCircle size={20} className="mr-2" />
-                    Kirim ke WhatsApp
-                  </Button>
-                </div>
+                <Button
+                  onClick={handleSendToWhatsApp}
+                  disabled={exporting || !monthlyReport.student.parentWhatsapp}
+                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                  size="lg"
+                >
+                  <MessageCircle size={20} className="mr-2" />
+                  {exporting ? 'Memproses...' : 'Kirim ke Wali Siswa 📱'}
+                </Button>
               </div>
             </CardHeader>
             <CardContent>

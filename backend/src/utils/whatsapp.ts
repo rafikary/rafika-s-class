@@ -75,18 +75,23 @@ export const generateMonthlyReportWhatsAppMessage = (
     progressSummary,
   } = params;
 
+  const frontendUrl = process.env.FRONTEND_URL || 'https://rafika-s-class.vercel.app';
+
   return `Halo Bapak/Ibu ${parentName},
 
 Berikut saya kirimkan laporan belajar ${studentName} untuk periode ${month} ${year}.
 
-Ringkasan:
-- Total pertemuan: ${totalSessions} kali
-- Materi yang dipelajari: ${subjectsSummary}
-- Perkembangan: ${progressSummary}
+*Ringkasan:*
+\u2022 Total pertemuan: ${totalSessions} kali
+\u2022 Materi yang dipelajari: ${subjectsSummary}
+\u2022 Perkembangan: ${progressSummary}
 
-File laporan lengkap dapat diunduh melalui link yang akan saya kirimkan.
+\ud83d\udcc4 *Download Laporan PDF:*
+${frontendUrl}/laporan/bulanan
 
-Terima kasih atas kepercayaannya.
+Silakan buka link di atas, pilih nama ${studentName}, bulan ${month}, dan klik tombol download untuk mendapatkan laporan lengkap dalam format PDF.
+
+Terima kasih atas kepercayaannya \ud83d\ude4f
 
 ${teacherName}`;
 };
