@@ -24,6 +24,21 @@ body {
     text-wrap: pretty;
   }
   
+  /* Mobile Safe Area Support */
+  .pt-safe {
+    padding-top: max(1.5rem, env(safe-area-inset-top, 1.5rem));
+  }
+  
+  .pt-safe-plus-mobile-header {
+    padding-top: max(6.5rem, calc(6.5rem + env(safe-area-inset-top, 0px)));
+  }
+  
+  @media (min-width: 1024px) {
+    .pt-safe-plus-mobile-header {
+      padding-top: 0 !important;
+    }
+  }
+  
   /* Modern Animations */
   .animate-fade-in {
     animation: fadeIn 0.5s ease-in-out;

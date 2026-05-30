@@ -18,8 +18,8 @@ export default function RootLayout({
   return (
     <html lang="id">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <meta name="theme-color" content="#8B5CF6" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+        <meta name="theme-color" content="#3B82F6" />
       </head>
       <body className={inter.className}>
         <div className="flex min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 relative overflow-x-hidden">
@@ -31,7 +31,7 @@ export default function RootLayout({
           </div>
           
           <Sidebar />
-          <main className="flex-1 w-full lg:ml-72 pt-20 lg:pt-0 relative z-10 overflow-x-hidden">
+          <main className="flex-1 w-full lg:ml-72 pt-safe-plus-mobile-header relative z-10 overflow-x-hidden">
             <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
               {children}
             </div>
