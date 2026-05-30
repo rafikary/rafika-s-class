@@ -60,12 +60,12 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-3xl blur-3xl"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#C4A5D8]/10 to-[#D4A5C3]/10 rounded-3xl blur-3xl"></div>
         <div className="relative">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#8B7A99] via-[#C4A5D8] to-[#D4A5C3] bg-clip-text text-transparent">
             Dashboard
           </h1>
-          <p className="text-slate-600 mt-2 text-sm sm:text-base md:text-lg">Ringkasan data les private</p>
+          <p className="text-[#6B5B73] mt-2 text-sm sm:text-base md:text-lg">Ringkasan data les private</p>
         </div>
       </div>
 
@@ -73,18 +73,18 @@ export default function DashboardPage() {
       <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
         <Card className="group hover:scale-[1.02] transition-transform duration-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium text-slate-600">
+            <CardTitle className="text-xs sm:text-sm font-medium text-[#6B5B73]">
               Total Siswa
             </CardTitle>
-            <div className="p-1.5 sm:p-2.5 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg shadow-blue-500/30">
+            <div className="p-1.5 sm:p-2.5 bg-gradient-to-br from-[#9EB6C7] to-[#C4A5D8] rounded-xl shadow-lg shadow-[#9EB6C7]/30">
               <Users className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <div className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#9EB6C7] to-[#C4A5D8] bg-clip-text text-transparent">
               {stats.totalStudents}
             </div>
-            <p className="text-[10px] sm:text-xs text-slate-500 mt-1">
+            <p className="text-[10px] sm:text-xs text-[#8B7A99] mt-1">
               {stats.activeStudents} aktif
             </p>
           </CardContent>
@@ -92,52 +92,52 @@ export default function DashboardPage() {
 
         <Card className="group hover:scale-[1.02] transition-transform duration-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium text-slate-600">
+            <CardTitle className="text-xs sm:text-sm font-medium text-[#6B5B73]">
               Laporan Bulan Ini
             </CardTitle>
-            <div className="p-1.5 sm:p-2.5 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg shadow-purple-500/30">
+            <div className="p-1.5 sm:p-2.5 bg-gradient-to-br from-[#C4A5D8] to-[#D4A5C3] rounded-xl shadow-lg shadow-[#C4A5D8]/30">
               <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <div className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#C4A5D8] to-[#D4A5C3] bg-clip-text text-transparent">
               {stats.reportsThisMonth}
             </div>
-            <p className="text-[10px] sm:text-xs text-slate-500 mt-1">pertemuan</p>
+            <p className="text-[10px] sm:text-xs text-[#8B7A99] mt-1">pertemuan</p>
           </CardContent>
         </Card>
 
-        <Card className="group hover:scale-[1.02] transition-transform duration-200 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-green-200 col-span-2 lg:col-span-1">
+        <Card className="group hover:scale-[1.02] transition-transform duration-200 bg-gradient-to-br from-[#E8F5E6] via-[#F0F9EF] to-[#E8F5E6] border-[#A8D5A3]/30 col-span-2 lg:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium text-green-700">
+            <CardTitle className="text-xs sm:text-sm font-medium text-[#5A8557]">
               Pendapatan Bulan Ini
             </CardTitle>
-            <div className="p-1.5 sm:p-2.5 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg shadow-green-500/30">
+            <div className="p-1.5 sm:p-2.5 bg-gradient-to-br from-[#7FB77A] to-[#A8D5A3] rounded-xl shadow-lg shadow-[#7FB77A]/30">
               <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-green-700 break-words">
+            <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-[#5A8557] break-words">
               Rp {stats.incomeThisMonth.toLocaleString('id-ID')}
             </div>
-            <p className="text-[10px] sm:text-xs text-green-600 mt-1">dari absensi hadir</p>
+            <p className="text-[10px] sm:text-xs text-[#7FB77A] mt-1">dari absensi hadir</p>
           </CardContent>
         </Card>
 
         <Card className="group hover:scale-[1.02] transition-transform duration-200 col-span-2 lg:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium text-slate-600">
+            <CardTitle className="text-xs sm:text-sm font-medium text-[#6B5B73]">
               Total Laporan
             </CardTitle>
-            <div className="p-1.5 sm:p-2.5 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl shadow-lg shadow-orange-500/30">
+            <div className="p-1.5 sm:p-2.5 bg-gradient-to-br from-[#E5B8A0] to-[#D4A088] rounded-xl shadow-lg shadow-[#E5B8A0]/30">
               <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+            <div className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#E5B8A0] to-[#D4A088] bg-clip-text text-transparent">
               {stats.totalReports}
             </div>
-            <p className="text-[10px] sm:text-xs text-slate-500 mt-1">sepanjang waktu</p>
+            <p className="text-[10px] sm:text-xs text-[#8B7A99] mt-1">sepanjang waktu</p>
           </CardContent>
         </Card>
       </div>
