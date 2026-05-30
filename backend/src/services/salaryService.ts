@@ -15,6 +15,7 @@ export interface SalaryPeriod {
 export class SalaryService {
   /**
    * Generate salary record tiap 10x pertemuan (otomatis dipanggil pas meetingCount % 10 === 0)
+   * Hanya untuk siswa dengan salaryScheduleType = 'per_10_meetings'
    */
   async generateTenMeetingSalary(studentId: number): Promise<void> {
     const student = await prisma.student.findUnique({
@@ -28,7 +29,13 @@ export class SalaryService {
       },
     });
 
+    // Only generate if student uses per_10_meetings schedule
     if (!student || !student.tarif || student.dailyReports.length < 10) {
+      return;
+    }
+
+    if (student.salaryScheduleType !== 'per_10_meetings') {
+      console.log(`Student ${student.name} uses monthly schedule, skipping 10-meeting salary`);
       return;
     }
 
@@ -50,17 +57,28 @@ export class SalaryService {
         isPaid: false,
       },
     });
+
+    // Update lastSalaryGeneratedAt
+    await prisma.student.update({
+      where: { id: studentId },
+      data: { lastSalaryGeneratedAt: new Date() },
+    });
   }
 
   /**
-   * Generate monthly salary untuk semua siswa aktif
+   * Generate monthly salary untuk siswa dengan salaryScheduleType = 'monthly'
+   * Dipanggil setiap tanggal yang ditentukan (monthlyPaymentDate) per siswa
    */
   async generateMonthlySalaries(month: Date): Promise<SalaryPeriod[]> {
     const periodStart = startOfMonth(month);
     const periodEnd = endOfMonth(month);
 
+    // Only get students with monthly salary schedule
     const students = await prisma.student.findMany({
-      where: { status: 'active' },
+      where: { 
+        status: 'active',
+        salaryScheduleType: 'monthly',
+      },
       include: {
         dailyReports: {
           where: {
@@ -105,6 +123,12 @@ export class SalaryService {
             totalAmount,
             isPaid: false,
           },
+        });
+
+        // Update lastSalaryGeneratedAt
+        await prisma.student.update({
+          where: { id: student.id },
+          data: { lastSalaryGeneratedAt: new Date() },
         });
       }
 
