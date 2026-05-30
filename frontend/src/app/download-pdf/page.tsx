@@ -164,28 +164,25 @@ function DownloadPdfContent() {
               <div className="grid grid-cols-3 gap-2">
                 <Button
                   type="button"
-                  variant="outline"
-                  size="sm"
+                  variant="ghost"
                   onClick={() => handleQuickPeriod(7)}
-                  className="text-xs"
+                  className="text-xs border border-gray-300 hover:bg-gray-50"
                 >
                   Last 7 Days
                 </Button>
                 <Button
                   type="button"
-                  variant="outline"
-                  size="sm"
+                  variant="ghost"
                   onClick={() => handleQuickPeriod(14)}
-                  className="text-xs"
+                  className="text-xs border border-gray-300 hover:bg-gray-50"
                 >
                   Last 14 Days
                 </Button>
                 <Button
                   type="button"
-                  variant="outline"
-                  size="sm"
+                  variant="ghost"
                   onClick={() => handleQuickPeriod(30)}
-                  className="text-xs"
+                  className="text-xs border border-gray-300 hover:bg-gray-50"
                 >
                   Last 30 Days
                 </Button>
