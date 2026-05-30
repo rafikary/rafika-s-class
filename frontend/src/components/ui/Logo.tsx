@@ -18,8 +18,8 @@ export function Logo({ size = 'md', showText = true }: LogoProps) {
   return (
     <div className="flex items-center gap-3">
       {/* Logo Image */}
-      <div className={`${currentSize.container} relative flex-shrink-0 rounded-full overflow-hidden border-2 border-[#C4A5D8]/30 shadow-md`}>
-        <div className="w-full h-full bg-gradient-to-br from-[#F5F1F8] to-white p-1">
+      <div className={`${currentSize.container} relative flex-shrink-0 rounded-full overflow-hidden border-2 border-[#D4BCFA]/40 shadow-lg shadow-[#D4BCFA]/20`}>
+        <div className="w-full h-full bg-gradient-to-br from-[#FAF9FE] to-white p-1">
           <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
             {/* Book */}
             <rect x="20" y="35" width="60" height="50" rx="4" fill="url(#logoGrad)" />
@@ -35,22 +35,22 @@ export function Logo({ size = 'md', showText = true }: LogoProps) {
             
             {/* Pencil */}
             <g transform="rotate(-35 65 40)">
-              <rect x="60" y="20" width="8" height="25" rx="1" fill="#E5B8A0" />
-              <polygon points="64,45 60,50 68,50" fill="#D4A088" />
-              <rect x="60" y="20" width="8" height="5" fill="#D4A5C3" />
+              <rect x="60" y="20" width="8" height="25" rx="1" fill="#FFDAB9" />
+              <polygon points="64,45 60,50 68,50" fill="#FFB8A0" />
+              <rect x="60" y="20" width="8" height="5" fill="#FFB8D1" />
             </g>
             
             {/* Sparkle */}
-            <circle cx="75" cy="30" r="2" fill="#E5B8A0" />
-            <circle cx="25" cy="80" r="1.5" fill="#D4A5C3" />
-            <circle cx="82" cy="70" r="1.5" fill="#9EB6C7" />
+            <circle cx="75" cy="30" r="2" fill="#FFB8D1" />
+            <circle cx="25" cy="80" r="1.5" fill="#B8F4D3" />
+            <circle cx="82" cy="70" r="1.5" fill="#A8D8F0" />
             
             {/* Gradient Definitions */}
             <defs>
               <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#9EB6C7" />
-                <stop offset="50%" stopColor="#C4A5D8" />
-                <stop offset="100%" stopColor="#D4A5C3" />
+                <stop offset="0%" stopColor="#A8D8F0" />
+                <stop offset="50%" stopColor="#D4BCFA" />
+                <stop offset="100%" stopColor="#FFB8D1" />
               </linearGradient>
             </defs>
           </svg>
@@ -60,11 +60,11 @@ export function Logo({ size = 'md', showText = true }: LogoProps) {
       {showText && (
         <div>
           <h1 className={`${currentSize.text} font-bold leading-tight tracking-tight`}>
-            <span className="bg-gradient-to-r from-[#8B7A99] via-[#C4A5D8] to-[#D4A5C3] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#7B68B0] via-[#D4BCFA] to-[#FFB8D1] bg-clip-text text-transparent">
               Belajar with
             </span>
           </h1>
-          <p className={`text-${size === 'sm' ? 'xs' : 'sm'} font-semibold text-[#8B7A99] tracking-wide`}>
+          <p className={`text-${size === 'sm' ? 'xs' : 'sm'} font-semibold text-[#7B68B0] tracking-wide`}>
             Miss Fika
           </p>
         </div>
