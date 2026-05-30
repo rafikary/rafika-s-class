@@ -186,7 +186,7 @@ export class ReportService {
   }
 
   async getMonthlyReport(query: MonthlyReportQuery) {
-    const { studentId, month, year } = query;
+    const { studentId, month, year, startDate, endDate } = query;
 
     // Verify student exists
     const student = await prisma.student.findUnique({
@@ -204,16 +204,38 @@ export class ReportService {
       throw new Error('Siswa tidak ditemukan');
     }
 
-    // Get reports for the month
-    const startOfMonth = new Date(year, month - 1, 1);
-    const endOfMonth = new Date(year, month, 0);
+    // Determine date range
+    let periodStart: Date;
+    let periodEnd: Date;
+    let periodLabel: string;
+    
+    if (startDate && endDate) {
+      // Use custom date range
+      periodStart = new Date(startDate);
+      periodEnd = new Date(endDate);
+      
+      // Format as "6 May - 5 June 2026"
+      const startFormatted = periodStart.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+      const endFormatted = periodEnd.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      periodLabel = `${startFormatted} - ${endFormatted}`;
+    } else if (month && year) {
+      // Use month/year (backward compatibility)
+      periodStart = new Date(year, month - 1, 1);
+      periodEnd = new Date(year, month, 0);
+      
+      // Format as "May 2026"
+      periodLabel = periodStart.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+    } else {
+      throw new Error('Either (month + year) or (startDate + endDate) must be provided');
+    }
 
+    // Get reports for the period
     const reports = await prisma.dailyReport.findMany({
       where: {
         studentId,
         date: {
-          gte: startOfMonth,
-          lte: endOfMonth,
+          gte: periodStart,
+          lte: periodEnd,
         },
       },
       include: {
@@ -253,27 +275,12 @@ export class ReportService {
     // Get unique subjects (deduplicated) and sort alphabetically
     const subjectsCovered = [...new Set(reports.map((r) => r.subject))].sort();
 
-    const monthNames = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
-    ];
-
     return {
       student,
       period: {
-        month,
-        year,
-        monthName: monthNames[month - 1],
+        label: periodLabel,  // "6 May - 5 June 2026" or "May 2026"
+        startDate: periodStart.toISOString().split('T')[0],
+        endDate: periodEnd.toISOString().split('T')[0],
       },
       summary: {
         totalSessions,

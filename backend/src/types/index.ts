@@ -97,8 +97,10 @@ export interface DailyReportWithStudent {
 // Monthly Report types
 export interface MonthlyReportQuery {
   studentId: number;
-  month: number;
-  year: number;
+  month?: number;        // Optional - for backward compatibility
+  year?: number;         // Optional - for backward compatibility
+  startDate?: string;    // ISO date format (YYYY-MM-DD)
+  endDate?: string;      // ISO date format (YYYY-MM-DD)
 }
 
 export interface MonthlyReportSummary {
@@ -122,9 +124,9 @@ export interface MonthlyReportData {
     parentWhatsapp: string | null;
   };
   period: {
-    month: number;
-    year: number;
-    monthName: string;
+    label: string;      // Formatted period label (e.g., "May 2026" or "6 May - 5 June 2026")
+    startDate: string;  // ISO date format (YYYY-MM-DD)
+    endDate: string;    // ISO date format (YYYY-MM-DD)
   };
   summary: MonthlyReportSummary;
   reports: DailyReportWithStudent[];

@@ -53,9 +53,7 @@ export const isValidWhatsAppNumber = (phone: string): boolean => {
 export interface WhatsAppMessageParams {
   studentName: string;
   parentName: string;
-  teacherName: string;
-  month: string;
-  year: number;
+  period: string;  // Flexible period label (e.g., "May 2026" or "6 May - 5 June 2026")
   totalSessions: number;
   subjectsSummary: string;
   progressSummary: string;
@@ -68,9 +66,7 @@ export const generateMonthlyReportWhatsAppMessage = (
   const {
     studentName,
     parentName,
-    teacherName,
-    month,
-    year,
+    period,
     totalSessions,
     subjectsSummary,
     progressSummary,
@@ -83,9 +79,9 @@ export const generateMonthlyReportWhatsAppMessage = (
 
   return `Assalamualaikum ${parentName},
 
-Berikut saya sertakan laporan perkembangan belajar *${studentName}* untuk periode *${month} ${year}* dalam bentuk PDF.
+Berikut saya sertakan laporan perkembangan belajar *${studentName}* untuk periode *${period}* dalam bentuk PDF.
 
-📚 *Ringkasan pembelajaran bulan ini:*
+📚 *Ringkasan pembelajaran:*
 
 • Total pertemuan: *${totalSessions} kali*
 • Perkembangan belajar: ${studentName} menunjukkan pencapaian yang baik selama pembelajaran berlangsung

@@ -138,8 +138,7 @@ export class ReportController {
     try {
       const monthlyReport = await reportService.getMonthlyReport({
         studentId,
-        month: validation.data.month,
-        year: validation.data.year,
+        ...validation.data,  // Pass all validated data (month/year or startDate/endDate)
       });
 
       return successResponse(res, monthlyReport);
@@ -168,16 +167,16 @@ export class ReportController {
     try {
       const monthlyReport = await reportService.getMonthlyReport({
         studentId,
-        month: validation.data.month,
-        year: validation.data.year,
+        ...validation.data,  // Pass all validated data (month/year or startDate/endDate)
       });
 
       const buffer = await exportExcelService.generateMonthlyReportExcel(monthlyReport);
 
-      const filename = `Laporan_${monthlyReport.student.name.replace(
+      const safeLabel = monthlyReport.period.label.replace(/[^a-zA-Z0-9_\-\s]/g, '').replace(/\s+/g, '_');
+      const filename = `Learning_Report_${monthlyReport.student.name.replace(
         /\s+/g,
         '_'
-      )}_${monthlyReport.period.monthName}_${monthlyReport.period.year}.xlsx`;
+      )}_${safeLabel}.xlsx`;
 
       res.setHeader(
         'Content-Type',
@@ -211,8 +210,7 @@ export class ReportController {
     try {
       const monthlyReport = await reportService.getMonthlyReport({
         studentId,
-        month: validation.data.month,
-        year: validation.data.year,
+        ...validation.data,  // Pass all validated data (month/year or startDate/endDate)
       });
 
       // Check if parent WhatsApp is available
@@ -250,14 +248,23 @@ export class ReportController {
 
       // Generate download URL - direct link to PDF endpoint
       const backendUrl = config.backendUrl || 'https://rafika-s-class-production.up.railway.app';
-      const downloadUrl = `${backendUrl}/api/reports/${studentId}/monthly/pdf?month=${validation.data.month}&year=${validation.data.year}`;
+      
+      // Build query string based on what was provided
+      const queryParams = new URLSearchParams();
+      if (validation.data.month && validation.data.year) {
+        queryParams.append('month', validation.data.month.toString());
+        queryParams.append('year', validation.data.year.toString());
+      } else if (validation.data.startDate && validation.data.endDate) {
+        queryParams.append('startDate', validation.data.startDate);
+        queryParams.append('endDate', validation.data.endDate);
+      }
+      
+      const downloadUrl = `${backendUrl}/api/reports/${studentId}/monthly/pdf?${queryParams.toString()}`;
 
       const message = generateMonthlyReportWhatsAppMessage({
         studentName: monthlyReport.student.name,
         parentName: monthlyReport.student.parentName,
-        teacherName: config.teacherName,
-        month: monthlyReport.period.monthName,
-        year: monthlyReport.period.year,
+        period: monthlyReport.period.label,  // Use the formatted label
         totalSessions: monthlyReport.summary.totalSessions,
         subjectsSummary,
         progressSummary,
@@ -304,8 +311,7 @@ export class ReportController {
     try {
       const monthlyReport = await reportService.getMonthlyReport({
         studentId,
-        month: validation.data.month,
-        year: validation.data.year,
+        ...validation.data,  // Pass all validated data (month/year or startDate/endDate)
       });
 
       // Format data for PDF
@@ -316,8 +322,7 @@ export class ReportController {
           parentName: monthlyReport.student.parentName,
         },
         period: {
-          month: monthlyReport.period.monthName,
-          year: monthlyReport.period.year,
+          label: monthlyReport.period.label,  // Use the formatted label
         },
         summary: {
           totalSessions: monthlyReport.summary.totalSessions,

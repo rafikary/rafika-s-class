@@ -56,6 +56,14 @@ export const paginationSchema = z.object({
 });
 
 export const monthlyReportQuerySchema = z.object({
-  month: z.string().transform(Number).pipe(z.number().int().min(1).max(12)),
-  year: z.string().transform(Number).pipe(z.number().int().min(2020).max(2100)),
-});
+  month: z.string().transform(Number).pipe(z.number().int().min(1).max(12)).optional(),
+  year: z.string().transform(Number).pipe(z.number().int().min(2020).max(2100)).optional(),
+  startDate: z.string().optional(),  // ISO date format (YYYY-MM-DD)
+  endDate: z.string().optional(),    // ISO date format (YYYY-MM-DD)
+}).refine(
+  (data) => (data.month && data.year) || (data.startDate && data.endDate),
+  {
+    message: "Either (month + year) or (startDate + endDate) must be provided",
+    path: ["query"],
+  }
+);

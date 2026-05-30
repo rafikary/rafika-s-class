@@ -8,8 +8,7 @@ interface MonthlyReportData {
     parentName: string;
   };
   period: {
-    month: string;
-    year: number;
+    label: string;  // "6 May - 5 June 2026" or "May 2026"
   };
   summary: {
     totalSessions: number;
@@ -51,7 +50,10 @@ export class PdfService {
         });
 
         // Set response headers for PDF download
-        const filename = `Laporan_${data.student.name}_${data.period.month}_${data.period.year}.pdf`;
+        const safeFileName = `Learning_Report_${data.student.name}_${data.period.label}`
+          .replace(/[^a-zA-Z0-9_\-\s]/g, '')  // Remove special chars
+          .replace(/\s+/g, '_');               // Replace spaces with underscores
+        const filename = `${safeFileName}.pdf`;
         res.setHeader('Content-Type', 'application/pdf');
         // Use 'inline' instead of 'attachment' to display PDF in browser
         res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
@@ -156,7 +158,7 @@ export class PdfService {
       .fontSize(18)
       .font('Helvetica-Bold')
       .fillColor('#7B68B0')
-      .text('LAPORAN PEMBELAJARAN BULANAN', 40, 75, {
+      .text('LEARNING PROGRESS REPORT', 40, 75, {
         align: 'center',
         width: doc.page.width - 80,
       });
@@ -165,7 +167,7 @@ export class PdfService {
       .fontSize(11)
       .font('Helvetica')
       .fillColor('#9B8AC0')
-      .text(`Periode: ${data.period.month} ${data.period.year}`, 40, 95, {
+      .text(`Period: ${data.period.label}`, 40, 95, {
         align: 'center',
         width: doc.page.width - 80,
       });

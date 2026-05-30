@@ -22,14 +22,14 @@ export class ExportExcelService {
     // Title
     worksheet.mergeCells('A1:I1');
     const titleCell = worksheet.getCell('A1');
-    titleCell.value = `LAPORAN BELAJAR BULANAN`;
+    titleCell.value = `LEARNING PROGRESS REPORT`;
     titleCell.font = { size: 16, bold: true };
     titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
     // Period
     worksheet.mergeCells('A2:I2');
     const periodCell = worksheet.getCell('A2');
-    periodCell.value = `${data.period.monthName} ${data.period.year}`;
+    periodCell.value = data.period.label;  // Use the formatted period label
     periodCell.font = { size: 12, bold: true };
     periodCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
