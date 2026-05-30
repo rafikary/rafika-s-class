@@ -272,7 +272,7 @@ export class PdfService {
       currentX += colWidths.topic;
 
       // Semangat (bintang)
-      const semangat = '★'.repeat(report.enthusiasmScore);
+      const semangat = `${report.enthusiasmScore}/5`;
       doc.text(semangat, currentX + 2, textY, {
         width: colWidths.semangat,
         align: 'center',
@@ -280,7 +280,7 @@ export class PdfService {
       currentX += colWidths.semangat;
 
       // Fokus (bintang)
-      const fokus = '★'.repeat(report.focusScore);
+      const fokus = `${report.focusScore}/5`;
       doc.text(fokus, currentX + 2, textY, {
         width: colWidths.fokus,
         align: 'center',
@@ -288,7 +288,7 @@ export class PdfService {
       currentX += colWidths.fokus;
 
       // Pemahaman (bintang)
-      const pemahaman = '★'.repeat(report.understandingScore);
+      const pemahaman = `${report.understandingScore}/5`;
       doc.text(pemahaman, currentX + 2, textY, {
         width: colWidths.pemahaman,
         align: 'center',
