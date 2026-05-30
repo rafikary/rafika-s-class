@@ -286,17 +286,19 @@ export class ReportController {
     const studentId = parseInt(req.params.studentId);
 
     if (isNaN(studentId)) {
-      return errorResponse(res, createError('INVALID_ID', 'Student ID tidak valid'), 400);
+      errorResponse(res, createError('INVALID_ID', 'Student ID tidak valid'), 400);
+      return;
     }
 
     const validation = monthlyReportQuerySchema.safeParse(req.query);
 
     if (!validation.success) {
-      return errorResponse(
+      errorResponse(
         res,
         createError('VALIDATION_ERROR', 'Parameter tidak valid', validation.error.errors),
         400
       );
+      return;
     }
 
     try {
@@ -344,7 +346,7 @@ export class ReportController {
 
       await pdfService.generateMonthlyReport(pdfData, res);
     } catch (error: any) {
-      return errorResponse(res, createError('ERROR', error.message), 500);
+      errorResponse(res, createError('ERROR', error.message), 500);
     }
   });
 }
