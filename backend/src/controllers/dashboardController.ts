@@ -23,6 +23,11 @@ export class DashboardController {
 
     return successResponse(res, reports);
   });
+
+  getNotifications = asyncHandler(async (req: Request, res: Response) => {
+    const notifications = await dashboardService.getNotifications();
+    return successResponse(res, notifications);
+  });
 }
 
 export default new DashboardController();

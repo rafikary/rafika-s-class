@@ -161,6 +161,11 @@ export const dashboardApi = {
     });
     return data.data || [];
   },
+
+  getNotifications: async (): Promise<any[]> => {
+    const { data } = await api.get<ApiResponse<any[]>>('/dashboard/notifications');
+    return data.data || [];
+  },
 };
 
 // Financial API
@@ -180,6 +185,40 @@ export const financialApi = {
 
   markMultipleAsPaid: async (reportIds: number[]): Promise<any> => {
     const { data } = await api.post<ApiResponse<any>>('/financial/mark-paid', { reportIds });
+    return data.data!;
+  },
+};
+
+// Salary API
+export const salaryApi = {
+  getRecords: async (filters?: {
+    periodType?: 'per_10_meetings' | 'monthly';
+    isPaid?: boolean;
+    studentId?: number;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<any[]> => {
+    const { data } = await api.get<ApiResponse<any[]>>('/salaries/records', { params: filters });
+    return data.data || [];
+  },
+
+  generateMonthly: async (month?: string): Promise<any> => {
+    const { data } = await api.post<ApiResponse<any>>('/salaries/generate-monthly', { month });
+    return data.data!;
+  },
+
+  markAsPaid: async (salaryRecordId: number): Promise<any> => {
+    const { data } = await api.patch<ApiResponse<any>>(`/salaries/${salaryRecordId}/mark-paid`);
+    return data.data!;
+  },
+
+  getUnpaid: async (): Promise<any> => {
+    const { data } = await api.get<ApiResponse<any>>('/salaries/unpaid');
+    return data.data!;
+  },
+
+  getSummary: async (year?: number): Promise<any> => {
+    const { data } = await api.get<ApiResponse<any>>('/salaries/summary', { params: { year } });
     return data.data!;
   },
 };

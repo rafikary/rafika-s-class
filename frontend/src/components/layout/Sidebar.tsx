@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Users, Calendar, FileText, DollarSign, Menu, X, BookOpen, Sparkles } from 'lucide-react';
+import { Home, Users, Calendar, FileText, DollarSign, Menu, X, BookOpen, Sparkles, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/ui/Logo';
@@ -13,6 +13,7 @@ const navigation = [
   { name: 'Jadwal', href: '/jadwal', icon: Calendar, exact: false },
   { name: 'Laporan', href: '/laporan', icon: FileText, exact: false },
   { name: 'Keuangan', href: '/laporan/keuangan', icon: DollarSign, exact: true },
+  { name: 'Gajian', href: '/gajian', icon: Wallet, exact: false },
 ];
 
 export default function Sidebar() {

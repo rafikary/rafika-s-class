@@ -4,6 +4,7 @@ import scheduleRoutes from './scheduleRoutes';
 import reportRoutes from './reportRoutes';
 import dashboardRoutes from './dashboardRoutes';
 import financialRoutes from './financialRoutes';
+import salaryRoutes from './salaryRoutes';
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use('/schedules', scheduleRoutes);
 router.use('/reports', reportRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/financial', financialRoutes);
+router.use('/salaries', salaryRoutes);
 
 export default router;

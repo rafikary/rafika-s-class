@@ -1,4 +1,5 @@
 import prisma from '../config/database';
+import { differenceInDays } from 'date-fns';
 
 export class DashboardService {
   async getDashboardStats(month?: number, year?: number) {
@@ -116,6 +117,129 @@ export class DashboardService {
     });
 
     return reports;
+  }
+
+  /**
+   * Get notifications/reminders untuk dashboard
+   * - Siswa yang sudah 10x pertemuan (perlu kirim laporan)
+   * - Siswa yang sudah 30 hari belum kirim laporan bulanan
+   */
+  async getNotifications() {
+    const now = new Date();
+    const notifications: Array<{
+      type: 'ten_meetings' | 'monthly_report' | 'unpaid_salary';
+      studentId: number;
+      studentName: string;
+      message: string;
+      priority: 'high' | 'medium' | 'low';
+      data?: any;
+    }> = [];
+
+    // Check students dengan meetingCount kelipatan 10 (perlu kirim laporan)
+    const studentsWithTenMeetings = await prisma.student.findMany({
+      where: {
+        status: 'active',
+        meetingCount: {
+          gte: 10,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        meetingCount: true,
+        lastReportSentAt: true,
+        parentWhatsapp: true,
+      },
+    });
+
+    for (const student of studentsWithTenMeetings) {
+      // Check if meetingCount is multiple of 10
+      if (student.meetingCount % 10 === 0) {
+        // Check if report already sent for this milestone
+        const lastMilestone = Math.floor(student.meetingCount / 10);
+        
+        notifications.push({
+          type: 'ten_meetings',
+          studentId: student.id,
+          studentName: student.name,
+          message: `${student.name} sudah ${student.meetingCount}x pertemuan! Kirim laporan ke orang tua?`,
+          priority: 'high',
+          data: {
+            meetingCount: student.meetingCount,
+            milestone: lastMilestone,
+            hasWhatsapp: !!student.parentWhatsapp,
+          },
+        });
+      }
+    }
+
+    // Check students yang sudah 30+ hari belum kirim laporan bulanan
+    const studentsNeedMonthlyReport = await prisma.student.findMany({
+      where: {
+        status: 'active',
+      },
+      select: {
+        id: true,
+        name: true,
+        lastMonthlySentAt: true,
+        parentWhatsapp: true,
+      },
+    });
+
+    for (const student of studentsNeedMonthlyReport) {
+      const daysSinceLastReport = student.lastMonthlySentAt
+        ? differenceInDays(now, student.lastMonthlySentAt)
+        : 999; // Belum pernah kirim
+
+      if (daysSinceLastReport >= 30) {
+        notifications.push({
+          type: 'monthly_report',
+          studentId: student.id,
+          studentName: student.name,
+          message: `Sudah ${daysSinceLastReport} hari belum kirim laporan bulanan untuk ${student.name}`,
+          priority: daysSinceLastReport >= 40 ? 'high' : 'medium',
+          data: {
+            daysSinceLastReport,
+            hasWhatsapp: !!student.parentWhatsapp,
+          },
+        });
+      }
+    }
+
+    // Check unpaid salaries
+    const unpaidSalaries = await prisma.salaryRecord.findMany({
+      where: { isPaid: false },
+      include: {
+        student: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      take: 5, // Limit to top 5
+      orderBy: { periodEnd: 'desc' },
+    });
+
+    for (const salary of unpaidSalaries) {
+      notifications.push({
+        type: 'unpaid_salary',
+        studentId: salary.studentId,
+        studentName: salary.student.name,
+        message: `Gaji belum dicatat: ${salary.student.name} - ${salary.periodType === 'per_10_meetings' ? '10x pertemuan' : 'Bulanan'} (Rp ${salary.totalAmount.toLocaleString('id-ID')})`,
+        priority: 'medium',
+        data: {
+          salaryRecordId: salary.id,
+          amount: salary.totalAmount,
+          periodType: salary.periodType,
+        },
+      });
+    }
+
+    // Sort by priority
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    notifications.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+
+    return notifications;
   }
 }
 

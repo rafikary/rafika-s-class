@@ -1,5 +1,6 @@
 import prisma from '../config/database';
 import { DailyReportInput, ReportQueryParams, MonthlyReportQuery } from '../types';
+import salaryService from './salaryService';
 
 export class ReportService {
   async getAllReports(params: ReportQueryParams) {
@@ -117,6 +118,21 @@ export class ReportService {
         },
       },
     });
+
+    // AUTO INCREMENT MEETING COUNT jika hadir
+    if (data.attendanceStatus === 'present') {
+      const updatedStudent = await prisma.student.update({
+        where: { id: data.studentId },
+        data: {
+          meetingCount: { increment: 1 },
+        },
+      });
+
+      // AUTO GENERATE SALARY tiap 10x pertemuan
+      if (updatedStudent.meetingCount % 10 === 0) {
+        await salaryService.generateTenMeetingSalary(data.studentId);
+      }
+    }
 
     return report;
   }

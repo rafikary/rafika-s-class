@@ -11,23 +11,28 @@ datasource db {
 }
 
 model Student {
-  id             Int       @id @default(autoincrement())
-  name           String
-  grade          String
-  parentName     String    @map("parent_name")
-  parentWhatsapp String?   @map("parent_whatsapp")
-  address        String?
-  tarif          Int?      // Tarif per pertemuan dalam Rupiah
-  status         String    @default("active") // active | inactive
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
+  id                    Int       @id @default(autoincrement())
+  name                  String
+  grade                 String
+  parentName            String    @map("parent_name")
+  parentWhatsapp        String?   @map("parent_whatsapp")
+  address               String?
+  tarif                 Int?      // Tarif per pertemuan dalam Rupiah
+  status                String    @default("active") // active | inactive
+  meetingCount          Int       @default(0) @map("meeting_count") // Counter pertemuan hadir
+  lastReportSentAt      DateTime? @map("last_report_sent_at") // Kapan terakhir kirim laporan
+  lastMonthlySentAt     DateTime? @map("last_monthly_sent_at") // Kapan terakhir kirim laporan bulanan
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   // Relations
-  dailyReports   DailyReport[]
-  schedules      Schedule[]
+  dailyReports          DailyReport[]
+  schedules             Schedule[]
+  salaryRecords         SalaryRecord[]
 
   @@index([status])
   @@index([name])
+  @@index([meetingCount])
   @@map("students")
 }
 
@@ -76,4 +81,28 @@ model DailyReport {
   @@index([studentId, date])
   @@index([paymentStatus])
   @@map("daily_reports")
+}
+
+model SalaryRecord {
+  id                Int      @id @default(autoincrement())
+  studentId         Int      @map("student_id")
+  periodType        String   @map("period_type") // per_10_meetings | monthly
+  periodStart       DateTime @map("period_start")
+  periodEnd         DateTime @map("period_end")
+  meetingCount      Int      @map("meeting_count") // Jumlah pertemuan dalam periode ini
+  totalAmount       Int      @map("total_amount") // Total gaji dari tarif x meetingCount
+  isPaid            Boolean  @default(false) @map("is_paid")
+  paidAt            DateTime? @map("paid_at")
+  notes             String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  student           Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([periodType])
+  @@index([isPaid])
+  @@index([periodStart, periodEnd])
+  @@map("salary_records")
 }
