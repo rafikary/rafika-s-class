@@ -105,14 +105,20 @@ export const MONTHS = [
 
 export const SUBJECTS = [
   'Matematika',
+  'Math',
   'Bahasa Indonesia',
   'Bahasa Inggris',
+  'Reading',
   'IPA',
+  'IPAS',
+  'Science',
   'IPS',
   'PKn',
   'Seni & Budaya',
   'Olahraga',
   'Agama',
+  'Mengaji',
+  'Hafalan',
   'Lainnya',
 ];
 
