@@ -143,28 +143,6 @@ export class PdfService {
     // Move cursor down after header
     doc.y = 160;
   }
-        width: doc.page.width - 100,
-      });
-
-    doc
-      .fontSize(14)
-      .font('Helvetica')
-      .text('Belajar with Miss Fika', 50, 65, {
-        align: 'center',
-        width: doc.page.width - 100,
-      });
-
-    doc
-      .fontSize(12)
-      .text('Belajar • Berkembang • Berprestasi', 50, 88, {
-        align: 'center',
-        width: doc.page.width - 100,
-      });
-
-    // Reset position after header
-    doc.y = 140;
-    doc.fillColor('#000000');
-  }
 
   private drawStudentInfo(doc: PDFKit.PDFDocument, data: MonthlyReportData) {
     const startY = doc.y;
