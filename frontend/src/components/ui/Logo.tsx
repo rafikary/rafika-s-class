@@ -61,7 +61,7 @@ export function Logo({ size = 'md', showText = true }: LogoProps) {
         <div>
           <h1 className={`${currentSize.text} font-bold leading-tight tracking-tight`}>
             <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">
-              Belajar with
+              Study with
             </span>
           </h1>
           <p className={`text-${size === 'sm' ? 'xs' : 'sm'} font-semibold text-slate-600 tracking-wide`}>

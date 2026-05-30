@@ -6,8 +6,8 @@ import Sidebar from '@/components/layout/Sidebar';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Belajar with Miss Fika',
-  description: 'Platform manajemen les private modern untuk anak SD',
+  title: 'Study with Miss Fika',
+  description: 'Modern private tutoring management platform for elementary students',
 };
 
 export default function RootLayout({

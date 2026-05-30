@@ -83,10 +83,10 @@ function DownloadPdfContent() {
               <FileText className="w-10 h-10 text-blue-600" strokeWidth={1.5} />
             </div>
             <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
-              Laporan Belajar Siswa
+              Student Learning Report
             </h1>
             <p className="text-sm text-gray-500">
-              Belajar with Miss Fika
+              Study with Miss Fika
             </p>
           </div>
         </div>
@@ -187,7 +187,7 @@ function DownloadPdfContent() {
 
         {/* Footer */}
         <div className="text-center mt-8 text-xs text-gray-400">
-          <p>Belajar • Berkembang • Berprestasi</p>
+          <p>Learn • Grow • Achieve</p>
         </div>
       </div>
     </div>
