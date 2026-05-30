@@ -8,4 +8,5 @@ export const config = {
   corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   teacherName: process.env.TEACHER_NAME || 'Bu Guru',
   databaseUrl: process.env.DATABASE_URL,
+  frontendUrl: process.env.FRONTEND_URL || 'https://rafika-s-class.vercel.app',
 };
