@@ -143,7 +143,16 @@ export default function TambahLaporanPage() {
             />
           </CardContent>
         </Card>
-showCustomSubject ? 'Lainnya' : formData.subject}
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Materi Pembelajaran</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Select
+              label="Mata Pelajaran"
+              required
+              value={showCustomSubject ? 'Lainnya' : formData.subject}
               onChange={(e) => {
                 const value = e.target.value;
                 if (value === 'Lainnya') {
@@ -166,16 +175,7 @@ showCustomSubject ? 'Lainnya' : formData.subject}
                 onChange={(e) => setCustomSubject(e.target.value)}
                 placeholder="Contoh: Komputer, Menggambar, dll"
               />
-            )}ardTitle>Materi Pembelajaran</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Select
-              label="Mata Pelajaran"
-              required
-              value={formData.subject}
-              onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-              options={SUBJECTS.map((s) => ({ value: s, label: s }))}
-            />
+            )}
 
             <Textarea
               label="Topik/Materi yang Dipelajari"
