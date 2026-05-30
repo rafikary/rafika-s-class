@@ -81,7 +81,7 @@ export const generateMonthlyReportWhatsAppMessage = (
     ? `\n\n📄 *Download Laporan PDF:*\n${downloadUrl}\n\n_(Klik link di atas untuk download laporan lengkap dalam bentuk PDF)_`
     : ``;
 
-  return `Halo ${parentName},
+  return `Assalamualaikum ${parentName},
 
 Berikut saya sertakan laporan perkembangan belajar *${studentName}* untuk periode *${month} ${year}* dalam bentuk PDF.
 
@@ -96,9 +96,8 @@ Silakan melihat laporan PDF terlampir untuk informasi yang lebih lengkap mengena
 
 Terima kasih atas kepercayaan yang telah diberikan.
 
-Salam,
-*${teacherName}*
-_Belajar with Miss Fika_`;
+Wassalamualaikum wr. wb.
+*${teacherName}*`;
 };
 
 /**

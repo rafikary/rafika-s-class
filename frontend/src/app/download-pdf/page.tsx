@@ -74,88 +74,121 @@ function DownloadPdfContent() {
   const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-4 sm:py-8 px-3 sm:px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-6 sm:mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full mb-3 sm:mb-4">
-            <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+    <div className="min-h-screen bg-white py-8 sm:py-12 px-4 sm:px-6">
+      <div className="max-w-lg mx-auto">
+        {/* Header Section */}
+        <div className="text-center mb-8 sm:mb-12">
+          <div className="mb-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-50 rounded-2xl mb-4">
+              <FileText className="w-10 h-10 text-blue-600" strokeWidth={1.5} />
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
+              Laporan Belajar Siswa
+            </h1>
+            <p className="text-sm text-gray-500">
+              Belajar with Miss Fika
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-            Download Laporan Belajar
-          </h1>
-          <p className="text-gray-600 text-xs sm:text-sm md:text-base">
-            Miss Rafika's Learning Center
-          </p>
         </div>
 
-        <Card className="shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-base sm:text-lg">Pilih Laporan yang Ingin Diunduh</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 sm:space-y-4">
-            <Select
-              label="Nama Siswa"
-              required
-              value={selectedStudent}
-              onChange={(e) => setSelectedStudent(e.target.value)}
-              options={students.map((s) => ({ value: s.id, label: `${s.name} (${s.grade})` }))}
-            />
+        {/* Form Card */}
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 sm:p-8 mb-6">
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nama Siswa <span className="text-red-500">*</span>
+              </label>
+              <Select
+                value={selectedStudent}
+                onChange={(e) => setSelectedStudent(e.target.value)}
+                options={students.map((s) => ({ value: s.id, label: `${s.name} (${s.grade})` }))}
+                className="w-full"
+              />
+            </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <Select
-                label="Bulan"
-                required
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                options={MONTHS.map((m, i) => ({ value: i + 1, label: m }))}
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Bulan <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                  options={MONTHS.map((m, i) => ({ value: i + 1, label: m }))}
+                  className="w-full"
+                />
+              </div>
 
-              <Select
-                label="Tahun"
-                required
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                options={years.map((y) => ({ value: y, label: y.toString() }))}
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tahun <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                  options={years.map((y) => ({ value: y, label: y.toString() }))}
+                  className="w-full"
+                />
+              </div>
             </div>
 
             <Button
               onClick={handleDownloadPdf}
               disabled={downloading || !selectedStudent}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-base sm:text-lg py-4 sm:py-6"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 rounded-xl transition-colors"
             >
               {downloading ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Mengunduh...
+                  Mengunduh Laporan...
                 </>
               ) : (
                 <>
                   <Download className="mr-2 h-5 w-5" />
-                  Download Laporan PDF 📄
+                  Download Laporan PDF
                 </>
               )}
             </Button>
+          </div>
+        </div>
 
-            <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <p className="text-xs sm:text-sm text-blue-800">
-                <strong>ℹ️ Informasi:</strong><br />
+        {/* Info Box */}
+        <div className="bg-blue-50 border border-blue-100 rounded-xl p-5">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center mt-0.5">
+              <span className="text-white text-xs font-bold">i</span>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">Informasi Laporan</h3>
+              <p className="text-xs text-gray-600 leading-relaxed">
                 Laporan berisi ringkasan belajar siswa selama satu bulan, termasuk:
               </p>
-              <ul className="text-xs sm:text-sm text-blue-700 mt-2 ml-4 list-disc">
-                <li>Total pertemuan & kehadiran</li>
-                <li>Rata-rata nilai semangat, fokus & pemahaman</li>
-                <li>Daftar materi yang dipelajari</li>
-                <li>Catatan perkembangan per pertemuan</li>
+              <ul className="mt-3 space-y-1.5 text-xs text-gray-600">
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
+                  Total pertemuan & kehadiran
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
+                  Rata-rata nilai semangat, fokus & pemahaman
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
+                  Daftar materi yang dipelajari
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
+                  Catatan perkembangan per pertemuan
+                </li>
               </ul>
             </div>
+          </div>
+        </div>
 
-            <div className="text-center text-xs sm:text-sm text-gray-500 mt-4 sm:mt-6">
-              <p>Laporan dibuat dengan 💜 oleh Miss Rafika</p>
-              <p className="mt-1">Belajar • Berkembang • Berprestasi</p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Footer */}
+        <div className="text-center mt-8 text-xs text-gray-400">
+          <p>Belajar • Berkembang • Berprestasi</p>
+        </div>
       </div>
     </div>
   );
@@ -164,10 +197,10 @@ function DownloadPdfContent() {
 export default function DownloadPdfPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8 px-4">
-        <div className="max-w-2xl mx-auto text-center mt-20">
-          <Loader2 className="w-12 h-12 animate-spin mx-auto text-purple-600" />
-          <p className="mt-4 text-gray-600">Memuat halaman...</p>
+      <div className="min-h-screen bg-white py-8 px-4">
+        <div className="max-w-lg mx-auto text-center mt-20">
+          <Loader2 className="w-10 h-10 animate-spin mx-auto text-blue-600" />
+          <p className="mt-4 text-sm text-gray-600">Memuat halaman...</p>
         </div>
       </div>
     }>
