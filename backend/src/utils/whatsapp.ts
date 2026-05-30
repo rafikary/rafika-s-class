@@ -97,7 +97,8 @@ Silakan melihat laporan PDF terlampir untuk informasi yang lebih lengkap mengena
 Terima kasih atas kepercayaan yang telah diberikan.
 
 Wassalamualaikum wr. wb.
-*${teacherName}*`;
+
+_Study with Miss Fika_`;
 };
 
 /**
