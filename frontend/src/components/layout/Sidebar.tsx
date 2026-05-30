@@ -28,7 +28,7 @@ export default function Sidebar() {
               <GraduationCap size={24} className="text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Rafika's Class</h1>
+              <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Miss Rafika's Class</h1>
               <p className="text-xs text-slate-500">Admin Dashboard</p>
             </div>
           </div>
@@ -65,7 +65,7 @@ export default function Sidebar() {
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Rafika's Class
+                  Miss Rafika's Class
                 </h1>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Admin Dashboard
@@ -128,7 +128,7 @@ export default function Sidebar() {
                 <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-semibold text-slate-900">Bu Rafika</p>
+                <p className="text-sm font-semibold text-slate-900">Miss Rafika</p>
                 <p className="text-xs text-slate-500">Guru Les Private</p>
               </div>
             </div>
