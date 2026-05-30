@@ -24,17 +24,17 @@ export class DashboardController {
     return successResponse(res, reports);
   });
 
-  getNotifications = asyncHandler(async (req: Request, res: Response) => {
+  getNotifications = asyncHandler(async (_req: Request, res: Response) => {
     const notifications = await dashboardService.getNotifications();
     return successResponse(res, notifications);
   });
 
-  getTodaySchedule = asyncHandler(async (req: Request, res: Response) => {
+  getTodaySchedule = asyncHandler(async (_req: Request, res: Response) => {
     const schedule = await dashboardService.getTodaySchedule();
     return successResponse(res, schedule);
   });
 
-  getStudentHealth = asyncHandler(async (req: Request, res: Response) => {
+  getStudentHealth = asyncHandler(async (_req: Request, res: Response) => {
     const healthIndicators = await dashboardService.getStudentHealthIndicators();
     return successResponse(res, healthIndicators);
   });

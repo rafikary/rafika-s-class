@@ -83,7 +83,7 @@ export class PdfService {
     });
   }
 
-  private drawHeader(doc: PDFKit.PDFDocument, data: MonthlyReportData) {
+  private drawHeader(doc: PDFKit.PDFDocument, _data: MonthlyReportData) {
     // Header background gradient effect (purple to pink)
     doc
       .rect(0, 0, doc.page.width, 140)

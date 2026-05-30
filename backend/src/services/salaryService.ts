@@ -1,5 +1,5 @@
-import prisma from '../lib/prisma';
-import { startOfMonth, endOfMonth, subMonths } from 'date-fns';
+import prisma from '../config/database';
+import { startOfMonth, endOfMonth } from 'date-fns';
 
 export interface SalaryPeriod {
   studentId: number;
@@ -196,7 +196,7 @@ export class SalaryService {
       where: { isPaid: false },
     });
 
-    const totalUnpaid = unpaidRecords.reduce((sum, record) => sum + record.totalAmount, 0);
+    const totalUnpaid = unpaidRecords.reduce((sum: number, record: any) => sum + record.totalAmount, 0);
     const totalRecords = unpaidRecords.length;
 
     return {
@@ -232,12 +232,12 @@ export class SalaryService {
     });
 
     const totalPaid = records
-      .filter((r) => r.isPaid)
-      .reduce((sum, r) => sum + r.totalAmount, 0);
+      .filter((r: any) => r.isPaid)
+      .reduce((sum: number, r: any) => sum + r.totalAmount, 0);
 
     const totalUnpaid = records
-      .filter((r) => !r.isPaid)
-      .reduce((sum, r) => sum + r.totalAmount, 0);
+      .filter((r: any) => !r.isPaid)
+      .reduce((sum: number, r: any) => sum + r.totalAmount, 0);
 
     const total = totalPaid + totalUnpaid;
 

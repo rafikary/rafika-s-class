@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { asyncHandler } from '../utils/asyncHandler';
+import { asyncHandler } from '../utils/errorHandler';
 import salaryService from '../services/salaryService';
 import { startOfMonth, subMonths } from 'date-fns';
 
@@ -84,7 +84,7 @@ export class SalaryController {
    * GET /api/salaries/unpaid
    * Get total unpaid salary
    */
-  getUnpaid = asyncHandler(async (req: Request, res: Response) => {
+  getUnpaid = asyncHandler(async (_req: Request, res: Response) => {
     const result = await salaryService.getTotalUnpaid();
 
     res.json({

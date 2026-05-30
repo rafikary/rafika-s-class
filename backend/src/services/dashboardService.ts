@@ -5,7 +5,7 @@ export class DashboardService {
   /**
    * Calculate student health status based on attendance, ratings, and payment
    */
-  private calculateStudentHealth(student: any, reports: any[], unpaidCount: number) {
+  private calculateStudentHealth(_student: any, reports: any[], unpaidCount: number) {
     const totalReports = reports.length;
     if (totalReports === 0) return { status: 'unknown', score: 0 };
 
@@ -96,6 +96,23 @@ export class DashboardService {
 
     // Count total reports
     const totalReports = await prisma.dailyReport.count();
+
+    // Calculate total income (all time)
+    const allPresentReports = await prisma.dailyReport.findMany({
+      where: {
+        attendanceStatus: 'present',
+      },
+      include: {
+        student: {
+          select: {
+            tarif: true,
+          },
+        },
+      },
+    });
+    const totalIncome = allPresentReports.reduce((sum, report) => {
+      return sum + (report.student.tarif || 0);
+    }, 0);
 
     // Calculate income from present attendance
     const presentReportsThisMonth = reportsThisMonth.filter(
