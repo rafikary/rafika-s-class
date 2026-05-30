@@ -8,7 +8,6 @@ import { Select } from '@/components/ui/Select';
 import { Download, Loader2, FileText } from 'lucide-react';
 import { reportsApi, studentsApi, handleApiError } from '@/lib/api';
 import { Student } from '@/types';
-import { MONTHS } from '@/lib/utils';
 
 function DownloadPdfContent() {
   const searchParams = useSearchParams();
@@ -267,11 +266,6 @@ function DownloadPdfContent() {
                 <li className="flex items-center gap-2">
                   <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
                   Progress notes per meeting
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
                 </li>
               </ul>
             </div>
