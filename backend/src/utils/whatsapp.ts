@@ -78,21 +78,31 @@ export const generateMonthlyReportWhatsAppMessage = (
   } = params;
 
   const downloadSection = downloadUrl
-    ? `\n\ud83d\udcc4 *Download Laporan PDF:*\n${downloadUrl}\n\nKlik link di atas untuk langsung download laporan lengkap dalam format PDF.`
-    : `\n\ud83d\udcc4 Laporan lengkap akan saya kirimkan dalam format PDF.`;
+    ? `\n📄 *Download Laporan PDF:*\n${downloadUrl}\n\n_(Klik link di atas untuk download laporan lengkap)_`
+    : `\n📄 Laporan lengkap akan saya kirimkan dalam format PDF.`;
 
-  return `Halo Bapak/Ibu ${parentName},
+  return `✨ *LAPORAN BELAJAR - MISS RAFIKA'S LEARNING CENTER* ✨
 
-Berikut saya kirimkan laporan belajar ${studentName} untuk periode ${month} ${year}.
+━━━━━━━━━━━━━━━━━━━━━━
 
-*Ringkasan:*
-\u2022 Total pertemuan: ${totalSessions} kali
-\u2022 Materi yang dipelajari: ${subjectsSummary}
-\u2022 Perkembangan: ${progressSummary}${downloadSection}
+Assalamualaikum Bapak/Ibu ${parentName},
 
-Terima kasih atas kepercayaannya \ud83d\ude4f
+Berikut saya sampaikan laporan perkembangan belajar *${studentName}* untuk periode *${month} ${year}*.
 
-${teacherName}`;
+📊 *RINGKASAN PEMBELAJARAN:*
+
+• Jumlah Pertemuan: *${totalSessions} kali*
+• Materi Belajar: ${subjectsSummary}
+• Perkembangan: ${progressSummary}${downloadSection}
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+Terima kasih atas kepercayaannya. Mari kita dukung bersama prestasi ${studentName}! 💪📚
+
+Wassalamualaikum,
+*${teacherName}* 🌟
+
+_Belajar • Berkembang • Berprestasi_`;
 };
 
 /**
