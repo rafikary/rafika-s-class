@@ -248,9 +248,9 @@ export class ReportController {
 
       const progressSummary = `Rata-rata pencapaian ${avgScore}/5 dengan ${monthlyReport.summary.present} pertemuan hadir dari ${monthlyReport.summary.totalSessions} total pertemuan`;
 
-      // Generate download URL with pre-filled data
-      const frontendUrl = config.frontendUrl || 'https://rafika-s-class.vercel.app';
-      const downloadUrl = `${frontendUrl}/download-pdf?student=${studentId}&month=${validation.data.month}&year=${validation.data.year}`;
+      // Generate download URL - direct link to PDF endpoint
+      const backendUrl = config.backendUrl || 'https://rafika-s-class-production.up.railway.app';
+      const downloadUrl = `${backendUrl}/api/reports/${studentId}/monthly/pdf?month=${validation.data.month}&year=${validation.data.year}`;
 
       const message = generateMonthlyReportWhatsAppMessage({
         studentName: monthlyReport.student.name,

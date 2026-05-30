@@ -123,10 +123,8 @@ export default function LaporanBulananPage() {
         year: selectedYear,
       });
 
-      // Open WhatsApp with pre-filled message
-      window.open(response.whatsappUrl, '_blank');
-      
-      alert('✅ WhatsApp terbuka! Tinggal klik kirim untuk mengirim laporan ke orang tua.');
+      // Use location.href for better mobile WhatsApp redirect
+      window.location.href = response.whatsappUrl;
     } catch (error) {
       alert('Gagal generate link WhatsApp: ' + handleApiError(error));
     } finally {
@@ -159,7 +157,8 @@ export default function LaporanBulananPage() {
         year: selectedYear,
       });
 
-      window.open(response.whatsappUrl, '_blank');
+      // Use location.href for better mobile WhatsApp redirect
+      window.location.href = response.whatsappUrl;
       setShowWhatsAppPreview(false);
     } catch (error) {
       alert('Gagal membuka WhatsApp: ' + handleApiError(error));

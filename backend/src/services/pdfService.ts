@@ -53,7 +53,8 @@ export class PdfService {
         // Set response headers for PDF download
         const filename = `Laporan_${data.student.name}_${data.period.month}_${data.period.year}.pdf`;
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        // Use 'inline' instead of 'attachment' to display PDF in browser
+        res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
 
         // Pipe PDF to response
         doc.pipe(res);

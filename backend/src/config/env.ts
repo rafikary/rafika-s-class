@@ -9,4 +9,5 @@ export const config = {
   teacherName: process.env.TEACHER_NAME || 'Bu Guru',
   databaseUrl: process.env.DATABASE_URL,
   frontendUrl: process.env.FRONTEND_URL || 'https://rafika-s-class.vercel.app',
+  backendUrl: process.env.BACKEND_URL || 'https://rafika-s-class-production.up.railway.app',
 };
