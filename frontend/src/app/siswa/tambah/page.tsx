@@ -59,15 +59,15 @@ export default function TambahSiswaPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 sm:gap-4">
         <Link href="/siswa">
-          <Button variant="ghost" size="sm">
-            <ArrowLeft size={20} />
+          <Button variant="ghost" size="sm" className="h-8 w-8 sm:h-10 sm:w-10 p-0">
+            <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Tambah Siswa Baru</h1>
-          <p className="text-gray-600 mt-1">Isi form untuk menambahkan siswa</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Tambah Siswa Baru</h1>
+          <p className="text-gray-600 mt-1 text-sm sm:text-base">Daftarkan siswa les privat baru</p>
         </div>
       </div>
 

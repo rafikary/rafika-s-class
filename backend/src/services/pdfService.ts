@@ -84,20 +84,65 @@ export class PdfService {
   }
 
   private drawHeader(doc: PDFKit.PDFDocument, data: MonthlyReportData) {
-    // Header background gradient effect
+    // Header background gradient effect (purple to pink)
     doc
-      .rect(0, 0, doc.page.width, 120)
-      .fillAndStroke('#8B5CF6', '#6B46C1');
+      .rect(0, 0, doc.page.width, 140)
+      .fillAndStroke('#8B5CF6', '#EC4899');
 
     // Reset to white for text
     doc.fillColor('#FFFFFF');
 
-    // Title
+    // Logo area (simplified book icon using shapes)
+    const logoX = 50;
+    const logoY = 30;
+    
+    // Book icon - simple rectangle
     doc
-      .fontSize(24)
+      .rect(logoX, logoY, 35, 45)
+      .fillAndStroke('#FFFFFF', '#FFFFFF');
+    
+    // Book pages effect
+    doc
+      .rect(logoX + 5, logoY + 5, 25, 35)
+      .fillAndStroke('#E9D5FF', '#E9D5FF');
+    
+    // Sparkle decoration
+    doc
+      .circle(logoX + 30, logoY + 10, 3)
+      .fill('#FDE68A');
+
+    // Title - Miss Rafika's Learning Center
+    doc
+      .fontSize(26)
       .font('Helvetica-Bold')
-      .text('LAPORAN PEMBELAJARAN', 50, 30, {
+      .fillColor('#FFFFFF')
+      .text('MISS RAFIKA\'S LEARNING CENTER', 100, 35, {
+        width: doc.page.width - 150,
+      });
+
+    // Tagline
+    doc
+      .fontSize(11)
+      .font('Helvetica')
+      .text('Belajar • Berkembang • Berprestasi', 100, 65, {
+        width: doc.page.width - 150,
+      });
+
+    // Report title
+    doc
+      .fontSize(18)
+      .font('Helvetica-Bold')
+      .text('LAPORAN PEMBELAJARAN BULANAN', 50, 95, {
         align: 'center',
+        width: doc.page.width - 100,
+      });
+
+    // Reset color for content
+    doc.fillColor('#1F2937');
+    
+    // Move cursor down after header
+    doc.y = 160;
+  }
         width: doc.page.width - 100,
       });
 
