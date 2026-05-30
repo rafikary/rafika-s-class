@@ -18,15 +18,14 @@ export default function TambahLaporanPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [students, setStudents] = useState<Student[]>([]);
-  const [showCustomSubject, setShowCustomSubject] = useState(false);
-  const [customSubject, setCustomSubject] = useState('');
+  const [lessons, setLessons] = useState([
+    { subject: '', customSubject: '', useCustom: false, topic: '' },
+  ]);
   const [formData, setFormData] = useState({
     studentId: '',
     date: new Date().toISOString().split('T')[0],
     startTime: '15:00',
     endTime: '16:30',
-    subject: '',
-    topic: '',
     enthusiasmScore: 3,
     focusScore: 3,
     understandingScore: 3,
@@ -57,28 +56,52 @@ export default function TambahLaporanPage() {
       return;
     }
 
-    // Use custom subject if "Lainnya" is selected
-    const finalSubject = showCustomSubject ? customSubject : formData.subject;
-    
-    if (!finalSubject) {
-      alert('Pilih mata pelajaran atau isi mata pelajaran lainnya');
-      return;
-    }
+    const preparedLessons = lessons.map((lesson, index) => {
+      const finalSubject = lesson.useCustom ? lesson.customSubject.trim() : lesson.subject.trim();
+      const finalTopic = lesson.topic.trim();
+
+      if (!finalSubject) {
+        throw new Error(`Pelajaran ${index + 1}: pilih mata pelajaran atau isi mata pelajaran lainnya`);
+      }
+      if (!finalTopic) {
+        throw new Error(`Pelajaran ${index + 1}: isi topik/materi yang dipelajari`);
+      }
+
+      return { subject: finalSubject, topic: finalTopic };
+    });
 
     try {
       setLoading(true);
-      await reportsApi.create({
-        ...formData,
-        subject: finalSubject,
-        studentId: parseInt(formData.studentId),
-      });
-      alert('Laporan berhasil ditambahkan!');
+      await Promise.all(
+        preparedLessons.map((lesson) =>
+          reportsApi.create({
+            ...formData,
+            subject: lesson.subject,
+            topic: lesson.topic,
+            studentId: parseInt(formData.studentId),
+          })
+        )
+      );
+      alert(`Laporan berhasil ditambahkan! (${preparedLessons.length} pelajaran)`);
       router.push('/laporan');
     } catch (error) {
-      alert('Gagal menambahkan laporan: ' + handleApiError(error));
+      const message = error instanceof Error ? error.message : handleApiError(error);
+      alert('Gagal menambahkan laporan: ' + message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const updateLesson = (index: number, data: Partial<typeof lessons[0]>) => {
+    setLessons((prev) => prev.map((lesson, i) => (i === index ? { ...lesson, ...data } : lesson)));
+  };
+
+  const addLesson = () => {
+    setLessons((prev) => [...prev, { subject: '', customSubject: '', useCustom: false, topic: '' }]);
+  };
+
+  const removeLesson = (index: number) => {
+    setLessons((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -149,42 +172,61 @@ export default function TambahLaporanPage() {
             <CardTitle>Materi Pembelajaran</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Select
-              label="Mata Pelajaran"
-              required
-              value={showCustomSubject ? 'Lainnya' : formData.subject}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === 'Lainnya') {
-                  setShowCustomSubject(true);
-                  setFormData({ ...formData, subject: '' });
-                } else {
-                  setShowCustomSubject(false);
-                  setCustomSubject('');
-                  setFormData({ ...formData, subject: value });
-                }
-              }}
-              options={SUBJECTS.map((s) => ({ value: s, label: s }))}
-            />
+            {lessons.map((lesson, index) => (
+              <div key={`lesson-${index}`} className="rounded-xl border border-gray-200 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold text-gray-800">Pelajaran {index + 1}</p>
+                  {lessons.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="text-xs text-red-600 hover:text-red-700"
+                      onClick={() => removeLesson(index)}
+                    >
+                      Hapus
+                    </Button>
+                  )}
+                </div>
 
-            {showCustomSubject && (
-              <Input
-                label="Mata Pelajaran Lainnya"
-                required
-                value={customSubject}
-                onChange={(e) => setCustomSubject(e.target.value)}
-                placeholder="Contoh: Komputer, Menggambar, dll"
-              />
-            )}
+                <Select
+                  label="Mata Pelajaran"
+                  required
+                  value={lesson.useCustom ? 'Lainnya' : lesson.subject}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === 'Lainnya') {
+                      updateLesson(index, { useCustom: true, subject: '' });
+                    } else {
+                      updateLesson(index, { useCustom: false, customSubject: '', subject: value });
+                    }
+                  }}
+                  options={SUBJECTS.map((s) => ({ value: s, label: s }))}
+                />
 
-            <Textarea
-              label="Topik/Materi yang Dipelajari"
-              required
-              value={formData.topic}
-              onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
-              placeholder="Contoh: Perkalian dan Pembagian Bilangan"
-              rows={3}
-            />
+                {lesson.useCustom && (
+                  <Input
+                    label="Mata Pelajaran Lainnya"
+                    required
+                    value={lesson.customSubject}
+                    onChange={(e) => updateLesson(index, { customSubject: e.target.value })}
+                    placeholder="Contoh: Komputer, Menggambar, dll"
+                  />
+                )}
+
+                <Textarea
+                  label="Topik/Materi yang Dipelajari"
+                  required
+                  value={lesson.topic}
+                  onChange={(e) => updateLesson(index, { topic: e.target.value })}
+                  placeholder="Contoh: Perkalian dan Pembagian Bilangan"
+                  rows={3}
+                />
+              </div>
+            ))}
+
+            <Button type="button" variant="ghost" onClick={addLesson} className="text-sm border border-gray-300">
+              + Tambah Pelajaran
+            </Button>
 
             <Textarea
               label="PR/Tugas"

@@ -112,15 +112,15 @@ function DownloadPdfContent() {
   };
 
   return (
-    <div className="min-h-screen bg-white py-4 sm:py-6 px-4 sm:px-6">
+    <div className="min-h-screen bg-white pt-2 pb-4 sm:pt-3 sm:pb-6 px-4 sm:px-6">
       <div className="max-w-lg mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-5 sm:mb-6">
-          <div className="mb-4">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-50 rounded-xl mb-3">
-              <FileText className="w-7 h-7 text-blue-600" strokeWidth={1.5} />
+        <div className="text-center mb-4 sm:mb-5">
+          <div className="mb-3">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-50 rounded-xl mb-2">
+              <FileText className="w-6 h-6 text-blue-600" strokeWidth={1.5} />
             </div>
-            <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
+            <h1 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1.5">
               Student Learning Report
             </h1>
             <p className="text-sm text-gray-500">
