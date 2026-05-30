@@ -74,21 +74,21 @@ export const generateMonthlyReportWhatsAppMessage = (
   } = params;
 
   const downloadSection = downloadUrl
-    ? `\n\n📄 *Download Laporan PDF:*\n${downloadUrl}\n\n_(Klik link di atas untuk download laporan lengkap dalam bentuk PDF)_`
+    ? `\n\n*Download Laporan PDF:*\n${downloadUrl}\n\n_(Klik link di atas untuk download laporan lengkap dalam bentuk PDF)_`
     : ``;
 
   return `Assalamualaikum ${parentName},
 
 Berikut saya sertakan laporan perkembangan belajar *${studentName}* untuk periode *${period}* dalam bentuk PDF.
 
-📚 *Ringkasan pembelajaran:*
+*Ringkasan pembelajaran:*
 
-• Total pertemuan: *${totalSessions} kali*
-• Perkembangan belajar: ${studentName} menunjukkan pencapaian yang baik selama pembelajaran berlangsung
-• Materi yang dipelajari: ${subjectsSummary}
-• Detail kemajuan: ${progressSummary}${downloadSection}
+- Total pertemuan: *${totalSessions} kali*
+- Perkembangan belajar: ${studentName} menunjukkan pencapaian yang baik selama pembelajaran berlangsung
+- Materi yang dipelajari: ${subjectsSummary}
+- Detail kemajuan: ${progressSummary}${downloadSection}
 
-Silakan melihat laporan PDF terlampir untuk informasi yang lebih lengkap mengenai materi yang dipelajari, perkembangan belajar, serta catatan pembelajaran.
+Silakan klik link di atas untuk melihat laporan PDF lengkap mengenai materi yang dipelajari, perkembangan belajar, serta catatan pembelajaran.
 
 Terima kasih atas kepercayaan yang telah diberikan.
 

@@ -13,8 +13,8 @@ import { MONTHS, getScoreColor, formatDateShort, getAttendanceBadgeColor, getAtt
 export default function LaporanBulananPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedStudent, setSelectedStudent] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [monthlyReport, setMonthlyReport] = useState<MonthlyReport | null>(null);
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -23,6 +23,13 @@ export default function LaporanBulananPage() {
 
   useEffect(() => {
     loadStudents();
+    // Set default date range (current month)
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    
+    setStartDate(firstDay.toISOString().split('T')[0]);
+    setEndDate(lastDay.toISOString().split('T')[0]);
   }, []);
 
   const loadStudents = async () => {
@@ -39,12 +46,17 @@ export default function LaporanBulananPage() {
       alert('Pilih siswa terlebih dahulu');
       return;
     }
+    
+    if (!startDate || !endDate) {
+      alert('Pilih periode tanggal');
+      return;
+    }
 
     try {
       setLoading(true);
       const data = await reportsApi.getMonthly(parseInt(selectedStudent), {
-        month: selectedMonth,
-        year: selectedYear,
+        startDate,
+        endDate,
       });
       setMonthlyReport(data);
     } catch (error) {
@@ -55,19 +67,19 @@ export default function LaporanBulananPage() {
   };
 
   const handleExportExcel = async () => {
-    if (!selectedStudent) return;
+    if (!selectedStudent || !startDate || !endDate) return;
 
     try {
       setExporting(true);
       const blob = await reportsApi.exportExcel(parseInt(selectedStudent), {
-        month: selectedMonth,
-        year: selectedYear,
+        startDate,
+        endDate,
       });
 
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Laporan_${monthlyReport?.student.name.replace(/\s+/g, '_')}_${MONTHS[selectedMonth - 1]}_${selectedYear}.xlsx`;
+      a.download = `Laporan_${monthlyReport?.student.name.replace(/\s+/g, '_')}_${startDate}_${endDate}.xlsx`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -82,19 +94,19 @@ export default function LaporanBulananPage() {
   };
 
   const handleExportPdf = async () => {
-    if (!selectedStudent) return;
+    if (!selectedStudent || !startDate || !endDate) return;
 
     try {
       setExporting(true);
       const blob = await reportsApi.exportPdf(parseInt(selectedStudent), {
-        month: selectedMonth,
-        year: selectedYear,
+        startDate,
+        endDate,
       });
 
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Laporan_${monthlyReport?.student.name.replace(/\s+/g, '_')}_${MONTHS[selectedMonth - 1]}_${selectedYear}.pdf`;
+      a.download = `Laporan_${monthlyReport?.student.name.replace(/\s+/g, '_')}_${startDate}_${endDate}.pdf`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -109,7 +121,7 @@ export default function LaporanBulananPage() {
   };
 
   const handleSendToWhatsApp = async () => {
-    if (!selectedStudent || !monthlyReport) return;
+    if (!selectedStudent || !monthlyReport || !startDate || !endDate) return;
 
     if (!monthlyReport.student.parentWhatsapp) {
       alert('Nomor WhatsApp orang tua tidak tersedia. Silakan lengkapi data siswa terlebih dahulu.');
@@ -119,8 +131,8 @@ export default function LaporanBulananPage() {
     try {
       setExporting(true);
       const response = await reportsApi.getWhatsAppLink(parseInt(selectedStudent), {
-        month: selectedMonth,
-        year: selectedYear,
+        startDate,
+        endDate,
       });
 
       // Use location.href for better mobile WhatsApp redirect
@@ -133,12 +145,12 @@ export default function LaporanBulananPage() {
   };
 
   const handleGetWhatsAppLink = async () => {
-    if (!selectedStudent) return;
+    if (!selectedStudent || !startDate || !endDate) return;
 
     try {
       const response = await reportsApi.getWhatsAppLink(parseInt(selectedStudent), {
-        month: selectedMonth,
-        year: selectedYear,
+        startDate,
+        endDate,
       });
 
       setWhatsappMessage(response.message);
@@ -149,12 +161,12 @@ export default function LaporanBulananPage() {
   };
 
   const handleSendWhatsApp = async () => {
-    if (!selectedStudent) return;
+    if (!selectedStudent || !startDate || !endDate) return;
 
     try {
       const response = await reportsApi.getWhatsAppLink(parseInt(selectedStudent), {
-        month: selectedMonth,
-        year: selectedYear,
+        startDate,
+        endDate,
       });
 
       // Use location.href for better mobile WhatsApp redirect
@@ -165,7 +177,14 @@ export default function LaporanBulananPage() {
     }
   };
 
-  const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
+  const handleQuickPeriod = (days: number) => {
+    const today = new Date();
+    const startPeriod = new Date();
+    startPeriod.setDate(today.getDate() - days);
+    
+    setStartDate(startPeriod.toISOString().split('T')[0]);
+    setEndDate(today.toISOString().split('T')[0]);
+  };
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -180,41 +199,77 @@ export default function LaporanBulananPage() {
           <CardTitle>Filter Laporan</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Select
-              label="Pilih Siswa"
-              value={selectedStudent}
-              onChange={(e) => setSelectedStudent(e.target.value)}
-              options={students.map((s) => ({ value: s.id, label: `${s.name} (${s.grade})` }))}
-            />
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Select
+                label="Pilih Siswa"
+                value={selectedStudent}
+                onChange={(e) => setSelectedStudent(e.target.value)}
+                options={students.map((s) => ({ value: s.id, label: `${s.name} (${s.grade})` }))}
+              />
 
-            <Select
-              label="Bulan"
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-              options={MONTHS.map((m, i) => ({ value: i + 1, label: m }))}
-            />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Tanggal Mulai
+                </label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full h-9 sm:h-10 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
 
-            <Select
-              label="Tahun"
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              options={years.map((y) => ({ value: y, label: y.toString() }))}
-            />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Tanggal Selesai
+                </label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full h-9 sm:h-10 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+            </div>
 
-            <div className="flex items-end">
-              <Button onClick={loadMonthlyReport} disabled={!selectedStudent || loading} className="w-full h-9 sm:h-10 text-sm">
+            <div className="flex flex-wrap gap-2">
+              <span className="text-xs text-gray-600 self-center mr-2">Quick:</span>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => handleQuickPeriod(7)}
+                className="text-xs h-8 px-3 border border-gray-300"
+              >
+                7 Hari
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => handleQuickPeriod(14)}
+                className="text-xs h-8 px-3 border border-gray-300"
+              >
+                14 Hari
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => handleQuickPeriod(30)}
+                className="text-xs h-8 px-3 border border-gray-300"
+              >
+                30 Hari
+              </Button>
+              <div className="flex-1"></div>
+              <Button onClick={loadMonthlyReport} disabled={!selectedStudent || !startDate || !endDate || loading} className="h-8 text-sm px-4">
                 {loading ? (
                   <>
                     <Loader2 size={16} className="mr-2 animate-spin" />
-                    <span className="hidden sm:inline">Loading...</span>
-                    <span className="sm:hidden">Load...</span>
+                    Loading...
                   </>
                 ) : (
                   <>
                     <FileText size={16} className="mr-2" />
-                    <span className="hidden sm:inline">Lihat Rekap</span>
-                    <span className="sm:hidden">Rekap</span>
+                    Lihat Rekap
                   </>
                 )}
               </Button>
