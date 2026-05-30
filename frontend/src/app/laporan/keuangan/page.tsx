@@ -59,6 +59,28 @@ export default function LaporanKeuanganPage() {
     }
   };
 
+  const handleMarkStudentAsPaid = async (studentId: number) => {
+    const student = financial.breakdown.find((s: any) => s.studentId === studentId);
+    if (!student) return;
+
+    const unpaidReportIds = student.reports
+      .filter((r: any) => r.paymentStatus === 'unpaid')
+      .map((r: any) => r.id);
+
+    if (unpaidReportIds.length === 0) {
+      alert('Semua laporan siswa ini sudah dibayar');
+      return;
+    }
+
+    try {
+      await financialApi.markMultipleAsPaid(unpaidReportIds);
+      alert(`${unpaidReportIds.length} laporan ${student.studentName} berhasil ditandai lunas!`);
+      loadFinancialReport();
+    } catch (error) {
+      alert('Gagal update status: ' + handleApiError(error));
+    }
+  };
+
   const toggleSelectReport = (reportId: number) => {
     if (selectedReports.includes(reportId)) {
       setSelectedReports(selectedReports.filter((id) => id !== reportId));
@@ -77,7 +99,7 @@ export default function LaporanKeuanganPage() {
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Memuat laporan keuangan...</p>
+          <p className="mt-4 text-slate-600">Memuat laporan keuangan...</p>
         </div>
       </div>
     );
@@ -89,9 +111,14 @@ export default function LaporanKeuanganPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Laporan Keuangan</h1>
-        <p className="text-gray-600 mt-1">Kelola pendapatan dan pembayaran dari siswa</p>
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-3xl blur-3xl"></div>
+        <div className="relative">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            Laporan Keuangan
+          </h1>
+          <p className="text-slate-600 mt-2 text-lg">Kelola pendapatan dan pembayaran dari siswa</p>
+        </div>
       </div>
 
       {/* Period Filter */}
@@ -99,11 +126,11 @@ export default function LaporanKeuanganPage() {
         <CardContent className="pt-6">
           <div className="flex gap-4 items-center">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Bulan</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Bulan</label>
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
               >
                 {months.map((month, index) => (
                   <option key={index} value={index + 1}>
@@ -113,11 +140,11 @@ export default function LaporanKeuanganPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tahun</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Tahun</label>
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
               >
                 {[2024, 2025, 2026, 2027].map((year) => (
                   <option key={year} value={year}>
@@ -132,12 +159,14 @@ export default function LaporanKeuanganPage() {
 
       {/* Summary Cards */}
       <div className="grid gap-6 md:grid-cols-3">
-        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+        <Card className="group hover:scale-[1.02] transition-transform duration-200 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-green-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-green-700">
               Sudah Diambil
             </CardTitle>
-            <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="p-2.5 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg shadow-green-500/30">
+              <CheckCircle className="h-5 w-5 text-white" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-700">
@@ -149,12 +178,14 @@ export default function LaporanKeuanganPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
+        <Card className="group hover:scale-[1.02] transition-transform duration-200 bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 border-orange-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-orange-700">
               Belum Dibayar
             </CardTitle>
-            <Clock className="h-5 w-5 text-orange-600" />
+            <div className="p-2.5 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl shadow-lg shadow-orange-500/30">
+              <Clock className="h-5 w-5 text-white" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-orange-700">
@@ -166,12 +197,14 @@ export default function LaporanKeuanganPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+        <Card className="group hover:scale-[1.02] transition-transform duration-200 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-blue-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-blue-700">
               Total Pendapatan
             </CardTitle>
-            <TrendingUp className="h-5 w-5 text-blue-600" />
+            <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/30">
+              <TrendingUp className="h-5 w-5 text-white" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-700">
@@ -184,100 +217,129 @@ export default function LaporanKeuanganPage() {
         </Card>
       </div>
 
-      {/* Breakdown Per Siswa */}
+      {/* Breakdown Per Siswa - 2 Column Layout */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Breakdown Per Siswa</CardTitle>
+            <div>
+              <CardTitle>Breakdown Per Siswa</CardTitle>
+              <p className="text-sm text-slate-500 mt-1">Detail pembayaran setiap siswa</p>
+            </div>
             {selectedReports.length > 0 && (
               <Button onClick={handleMarkMultipleAsPaid}>
-                Tandai {selectedReports.length} Laporan Sebagai Sudah Dibayar
+                <CheckCircle size={18} className="mr-2" />
+                Tandai {selectedReports.length} Laporan Sebagai Lunas
               </Button>
             )}
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
             {financial.breakdown.map((student: any) => (
-              <div key={student.studentId} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900">{student.studentName}</h3>
-                    <p className="text-sm text-gray-600">{student.studentGrade} • Tarif: Rp {student.tarif.toLocaleString('id-ID')}/sesi</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-blue-700">
-                      Rp {student.totalRevenue.toLocaleString('id-ID')}
+              <div key={student.studentId} className="border-2 border-slate-200 rounded-2xl p-5 hover:border-blue-300 hover:shadow-lg transition-all duration-200">
+                {/* Student Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
+                      {student.studentName.charAt(0)}
                     </div>
-                    <p className="text-xs text-gray-600">{student.totalSessions} sesi</p>
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-900">{student.studentName}</h3>
+                      <p className="text-sm text-slate-600">{student.studentGrade}</p>
+                    </div>
                   </div>
+                  {student.unpaidSessions > 0 && (
+                    <Button 
+                      size="sm" 
+                      variant="primary"
+                      onClick={() => handleMarkStudentAsPaid(student.studentId)}
+                      className="text-xs"
+                    >
+                      <CheckCircle size={14} className="mr-1" />
+                      Lunas Semua
+                    </Button>
+                  )}
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div className="bg-green-50 p-3 rounded-lg">
-                    <p className="text-xs text-green-700 font-medium">Sudah Dibayar</p>
+                {/* Summary Stats */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-3 rounded-xl border border-green-200">
+                    <p className="text-xs text-green-700 font-medium mb-1">Sudah Dibayar</p>
                     <p className="text-lg font-bold text-green-700">
                       Rp {student.totalPaid.toLocaleString('id-ID')}
                     </p>
                     <p className="text-xs text-green-600">{student.paidSessions} sesi</p>
                   </div>
-                  <div className="bg-orange-50 p-3 rounded-lg">
-                    <p className="text-xs text-orange-700 font-medium">Belum Dibayar</p>
+                  <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-3 rounded-xl border border-orange-200">
+                    <p className="text-xs text-orange-700 font-medium mb-1">Belum Dibayar</p>
                     <p className="text-lg font-bold text-orange-700">
                       Rp {student.totalUnpaid.toLocaleString('id-ID')}
                     </p>
                     <p className="text-xs text-orange-600">{student.unpaidSessions} sesi</p>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <p className="text-xs text-gray-700 font-medium">Total Sesi</p>
-                    <p className="text-lg font-bold text-gray-700">{student.totalSessions}</p>
-                    <p className="text-xs text-gray-600">pertemuan</p>
+                </div>
+
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-3 rounded-xl border border-blue-200 mb-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-blue-700 font-medium">Total Pendapatan</p>
+                      <p className="text-xl font-bold text-blue-700">
+                        Rp {student.totalRevenue.toLocaleString('id-ID')}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-slate-600">Tarif/Sesi</p>
+                      <p className="text-sm font-semibold text-slate-700">Rp {student.tarif.toLocaleString('id-ID')}</p>
+                    </div>
                   </div>
                 </div>
 
-                {/* Detail Reports */}
+                {/* Detail Reports - Compact */}
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-700">Detail Pertemuan:</p>
-                  {student.reports.map((report: any) => (
-                    <div
-                      key={report.id}
-                      className="flex items-center justify-between bg-gray-50 p-3 rounded"
-                    >
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedReports.includes(report.id)}
-                          onChange={() => toggleSelectReport(report.id)}
-                          disabled={report.paymentStatus === 'paid'}
-                          className="w-4 h-4"
-                        />
+                  <p className="text-xs font-semibold text-slate-700 mb-2">Detail Pertemuan ({student.totalSessions}):</p>
+                  <div className="max-h-64 overflow-y-auto space-y-2">
+                    {student.reports.map((report: any) => (
+                      <div
+                        key={report.id}
+                        className="flex items-center justify-between bg-slate-50 hover:bg-slate-100 p-3 rounded-xl transition-colors border border-slate-200"
+                      >
+                        <div className="flex items-center gap-2 flex-1">
+                          <input
+                            type="checkbox"
+                            checked={selectedReports.includes(report.id)}
+                            onChange={() => toggleSelectReport(report.id)}
+                            disabled={report.paymentStatus === 'paid'}
+                            className="w-4 h-4 rounded"
+                          />
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-slate-900">
+                              {formatDate(report.date)} - {report.subject}
+                            </p>
+                            <p className="text-xs font-semibold text-blue-600">
+                              Rp {report.amount.toLocaleString('id-ID')}
+                            </p>
+                          </div>
+                        </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {formatDate(report.date)} - {report.subject}
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            Rp {report.amount.toLocaleString('id-ID')}
-                          </p>
+                          {report.paymentStatus === 'paid' ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold bg-green-100 text-green-700 border border-green-300">
+                              <CheckCircle size={12} />
+                              Lunas
+                            </span>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleMarkAsPaid(report.id)}
+                              className="text-xs h-7"
+                            >
+                              Bayar
+                            </Button>
+                          )}
                         </div>
                       </div>
-                      <div>
-                        {report.paymentStatus === 'paid' ? (
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                            <CheckCircle size={14} />
-                            Sudah Dibayar
-                          </span>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleMarkAsPaid(report.id)}
-                          >
-                            Tandai Dibayar
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
