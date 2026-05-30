@@ -302,9 +302,39 @@ export class PdfService {
     // Draw table rows
     doc.fillColor('#000000').font('Helvetica');
 
+    const minRowHeight = 28;
+    const rowPaddingY = 8;
+
+    const measureTextHeight = (text: string, width: number, fontSize: number) => {
+      doc.fontSize(fontSize).font('Helvetica');
+      return doc.heightOfString(text, { width, align: 'left' });
+    };
+
     data.reports.forEach((report, index) => {
+      const subjectsText = [report.subject, report.subject2, report.subject3]
+        .filter((value): value is string => Boolean(value))
+        .join('\n');
+      const topicsText = [report.topic, report.topic2, report.topic3]
+        .filter((value): value is string => Boolean(value))
+        .join('\n');
+      const prText = report.homework || '-';
+      const notesText = report.progressNotes || '-';
+
+      const subjectsHeight = measureTextHeight(subjectsText, colWidths.subject, 8);
+      const topicsHeight = measureTextHeight(topicsText, colWidths.topic, 8);
+      const prHeight = measureTextHeight(prText, colWidths.pr, 7);
+      const notesHeight = measureTextHeight(notesText, colWidths.notes, 7);
+
+      const rowHeight = Math.max(
+        minRowHeight,
+        subjectsHeight,
+        topicsHeight,
+        prHeight,
+        notesHeight,
+      ) + rowPaddingY;
+
       // Check if need new page
-      if (currentY > doc.page.height - 100) {
+      if (currentY + rowHeight > doc.page.height - 60) {
         doc.addPage({ layout: 'landscape' });
         
         // Add watermark to new page (save Y position)
@@ -315,7 +345,7 @@ export class PdfService {
         currentY = 40;
       }
 
-      const rowHeight = 45;
+      const textY = currentY + 5;
 
       // Alternating row colors
       if (index % 2 === 0) {
@@ -327,8 +357,6 @@ export class PdfService {
       doc.fillColor('#000000');
 
       currentX = startX;
-      const textY = currentY + 8;
-
       // No
       doc.fontSize(8).text((index + 1).toString(), currentX + 5, textY, {
         width: colWidths.no,
@@ -343,25 +371,17 @@ export class PdfService {
       });
       currentX += colWidths.date;
 
-      const subjects = [report.subject, report.subject2, report.subject3]
-        .filter((value): value is string => Boolean(value))
-        .join('\n');
-      const topics = [report.topic, report.topic2, report.topic3]
-        .filter((value): value is string => Boolean(value))
-        .join('\n');
-
       // Subject
-      doc.text(subjects, currentX + 2, textY, {
+      doc.text(subjectsText, currentX + 2, textY, {
         width: colWidths.subject,
         align: 'left',
       });
       currentX += colWidths.subject;
 
       // Topic
-      doc.text(topics, currentX + 2, textY, {
+      doc.text(topicsText, currentX + 2, textY, {
         width: colWidths.topic,
         align: 'left',
-        height: rowHeight - 10,
       });
       currentX += colWidths.topic;
 
@@ -390,18 +410,16 @@ export class PdfService {
       currentX += colWidths.pemahaman;
 
       // PR
-      doc.fontSize(7).text(report.homework || '-', currentX + 2, textY, {
+      doc.fontSize(7).text(prText, currentX + 2, textY, {
         width: colWidths.pr,
         align: 'left',
-        height: rowHeight - 10,
       });
       currentX += colWidths.pr;
 
       // Notes
-      doc.text(report.progressNotes || '-', currentX + 2, textY, {
+      doc.text(notesText, currentX + 2, textY, {
         width: colWidths.notes,
         align: 'left',
-        height: rowHeight - 10,
       });
 
       // Draw row border
