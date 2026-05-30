@@ -83,7 +83,7 @@ export default function LaporanPage() {
     // Convert to GroupedReports array
     const grouped: GroupedReports[] = [];
     studentReportsMap.forEach((studentReports, studentId) => {
-      const student = students.find(s => s.id === studentId) || studentReports[0]?.student;
+      const student = students.find(s => s.id === studentId);
       if (student) {
         grouped.push({
           student,
