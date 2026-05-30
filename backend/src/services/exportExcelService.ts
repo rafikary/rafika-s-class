@@ -118,12 +118,19 @@ export class ExportExcelService {
         .filter(Boolean)
         .join('\n');
 
+      const subjects = [report.subject, report.subject2, report.subject3]
+        .filter((value): value is string => Boolean(value))
+        .join('\n');
+      const topics = [report.topic, report.topic2, report.topic3]
+        .filter((value): value is string => Boolean(value))
+        .join('\n');
+
       const row = worksheet.addRow([
         index + 1,
         formattedDate,
         `${report.startTime}-${report.endTime}`,
-        report.subject,
-        report.topic,
+        subjects,
+        topics,
         report.enthusiasmScore,
         report.focusScore,
         report.understandingScore,

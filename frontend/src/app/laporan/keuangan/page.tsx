@@ -313,7 +313,14 @@ export default function LaporanKeuanganPage() {
                           />
                           <div className="flex-1">
                             <p className="text-sm font-medium text-slate-900">
-                              {formatDate(report.date)} - {report.subject}
+                              {formatDate(report.date)} -
+                              {[
+                                report.subject,
+                                report.subject2,
+                                report.subject3,
+                              ]
+                                .filter(Boolean)
+                                .join(', ')}
                             </p>
                             <p className="text-xs font-semibold text-blue-600">
                               Rp {report.amount.toLocaleString('id-ID')}

@@ -263,9 +263,19 @@ export default function LaporanPage() {
                               <p className="text-xs sm:text-sm text-gray-600 font-medium">
                                 {formatDateShort(report.date)} • {report.startTime} - {report.endTime}
                               </p>
-                              <p className="text-sm sm:text-base font-semibold text-gray-900 mt-1">
-                                {report.subject} - {report.topic}
-                              </p>
+                              <div className="text-sm sm:text-base font-semibold text-gray-900 mt-1 space-y-0.5">
+                                {[
+                                  [report.subject, report.topic],
+                                  [report.subject2, report.topic2],
+                                  [report.subject3, report.topic3],
+                                ]
+                                  .filter(([subject, topic]) => subject && topic)
+                                  .map(([subject, topic], idx) => (
+                                    <div key={`lesson-${report.id}-${idx}`}>
+                                      {subject} - {topic}
+                                    </div>
+                                  ))}
+                              </div>
                             </div>
                             <div className="flex items-center gap-2">
                               <Badge className={getAttendanceBadgeColor(report.attendanceStatus)}>

@@ -64,6 +64,10 @@ export interface DailyReportInput {
   endTime: string;
   subject: string;
   topic: string;
+  subject2?: string;
+  topic2?: string;
+  subject3?: string;
+  topic3?: string;
   enthusiasmScore: number;
   focusScore: number;
   understandingScore: number;
@@ -80,6 +84,10 @@ export interface DailyReportWithStudent {
   endTime: string;
   subject: string;
   topic: string;
+  subject2: string | null;
+  topic2: string | null;
+  subject3: string | null;
+  topic3: string | null;
   enthusiasmScore: number;
   focusScore: number;
   understandingScore: number;

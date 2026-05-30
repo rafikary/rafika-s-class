@@ -38,6 +38,10 @@ export const createDailyReportSchema = z.object({
   endTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Format waktu tidak valid'),
   subject: z.string().min(3, 'Mata pelajaran minimal 3 karakter'),
   topic: z.string().min(5, 'Topik minimal 5 karakter'),
+  subject2: z.string().min(3, 'Mata pelajaran minimal 3 karakter').optional(),
+  topic2: z.string().min(5, 'Topik minimal 5 karakter').optional(),
+  subject3: z.string().min(3, 'Mata pelajaran minimal 3 karakter').optional(),
+  topic3: z.string().min(5, 'Topik minimal 5 karakter').optional(),
   enthusiasmScore: z.number().int().min(1, 'Skor minimal 1').max(5, 'Skor maksimal 5'),
   focusScore: z.number().int().min(1, 'Skor minimal 1').max(5, 'Skor maksimal 5'),
   understandingScore: z.number().int().min(1, 'Skor minimal 1').max(5, 'Skor maksimal 5'),
@@ -45,6 +49,22 @@ export const createDailyReportSchema = z.object({
   progressNotes: z.string().optional(),
   parentNotes: z.string().optional(),
   attendanceStatus: z.enum(['present', 'excused', 'sick', 'cancelled']).optional(),
+}).superRefine((data, ctx) => {
+  if ((data.subject2 && !data.topic2) || (!data.subject2 && data.topic2)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Pelajaran 2 harus diisi lengkap (mata pelajaran dan topik)',
+      path: ['subject2'],
+    });
+  }
+
+  if ((data.subject3 && !data.topic3) || (!data.subject3 && data.topic3)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Pelajaran 3 harus diisi lengkap (mata pelajaran dan topik)',
+      path: ['subject3'],
+    });
+  }
 });
 
 export const updateDailyReportSchema = createDailyReportSchema.partial();

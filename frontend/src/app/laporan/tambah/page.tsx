@@ -20,6 +20,8 @@ export default function TambahLaporanPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [lessons, setLessons] = useState([
     { subject: '', customSubject: '', useCustom: false, topic: '' },
+    { subject: '', customSubject: '', useCustom: false, topic: '' },
+    { subject: '', customSubject: '', useCustom: false, topic: '' },
   ]);
   const [formData, setFormData] = useState({
     studentId: '',
@@ -56,15 +58,21 @@ export default function TambahLaporanPage() {
       return;
     }
 
-    const preparedLessons = lessons.map((lesson, index) => {
+    const normalizedLessons = lessons.map((lesson, index) => {
       const finalSubject = lesson.useCustom ? lesson.customSubject.trim() : lesson.subject.trim();
       const finalTopic = lesson.topic.trim();
 
-      if (!finalSubject) {
-        throw new Error(`Pelajaran ${index + 1}: pilih mata pelajaran atau isi mata pelajaran lainnya`);
-      }
-      if (!finalTopic) {
-        throw new Error(`Pelajaran ${index + 1}: isi topik/materi yang dipelajari`);
+      if (index === 0) {
+        if (!finalSubject) {
+          throw new Error('Pelajaran 1: pilih mata pelajaran atau isi mata pelajaran lainnya');
+        }
+        if (!finalTopic) {
+          throw new Error('Pelajaran 1: isi topik/materi yang dipelajari');
+        }
+      } else {
+        if ((!finalSubject && finalTopic) || (finalSubject && !finalTopic)) {
+          throw new Error(`Pelajaran ${index + 1}: lengkapi mata pelajaran dan topik atau kosongkan keduanya`);
+        }
       }
 
       return { subject: finalSubject, topic: finalTopic };
@@ -72,17 +80,17 @@ export default function TambahLaporanPage() {
 
     try {
       setLoading(true);
-      await Promise.all(
-        preparedLessons.map((lesson) =>
-          reportsApi.create({
-            ...formData,
-            subject: lesson.subject,
-            topic: lesson.topic,
-            studentId: parseInt(formData.studentId),
-          })
-        )
-      );
-      alert(`Laporan berhasil ditambahkan! (${preparedLessons.length} pelajaran)`);
+      await reportsApi.create({
+        ...formData,
+        subject: normalizedLessons[0].subject,
+        topic: normalizedLessons[0].topic,
+        subject2: normalizedLessons[1].subject || undefined,
+        topic2: normalizedLessons[1].topic || undefined,
+        subject3: normalizedLessons[2].subject || undefined,
+        topic3: normalizedLessons[2].topic || undefined,
+        studentId: parseInt(formData.studentId),
+      });
+      alert('Laporan berhasil ditambahkan!');
       router.push('/laporan');
     } catch (error) {
       const message = error instanceof Error ? error.message : handleApiError(error);
@@ -96,13 +104,6 @@ export default function TambahLaporanPage() {
     setLessons((prev) => prev.map((lesson, i) => (i === index ? { ...lesson, ...data } : lesson)));
   };
 
-  const addLesson = () => {
-    setLessons((prev) => [...prev, { subject: '', customSubject: '', useCustom: false, topic: '' }]);
-  };
-
-  const removeLesson = (index: number) => {
-    setLessons((prev) => prev.filter((_, i) => i !== index));
-  };
 
   return (
     <div className="space-y-6">
@@ -175,22 +176,14 @@ export default function TambahLaporanPage() {
             {lessons.map((lesson, index) => (
               <div key={`lesson-${index}`} className="rounded-xl border border-gray-200 p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-gray-800">Pelajaran {index + 1}</p>
-                  {lessons.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      className="text-xs text-red-600 hover:text-red-700"
-                      onClick={() => removeLesson(index)}
-                    >
-                      Hapus
-                    </Button>
-                  )}
+                  <p className="text-sm font-semibold text-gray-800">
+                    Pelajaran {index + 1}{index === 0 ? ' (wajib)' : ' (opsional)'}
+                  </p>
                 </div>
 
                 <Select
                   label="Mata Pelajaran"
-                  required
+                  required={index === 0}
                   value={lesson.useCustom ? 'Lainnya' : lesson.subject}
                   onChange={(e) => {
                     const value = e.target.value;
@@ -206,7 +199,7 @@ export default function TambahLaporanPage() {
                 {lesson.useCustom && (
                   <Input
                     label="Mata Pelajaran Lainnya"
-                    required
+                    required={index === 0}
                     value={lesson.customSubject}
                     onChange={(e) => updateLesson(index, { customSubject: e.target.value })}
                     placeholder="Contoh: Komputer, Menggambar, dll"
@@ -215,7 +208,7 @@ export default function TambahLaporanPage() {
 
                 <Textarea
                   label="Topik/Materi yang Dipelajari"
-                  required
+                  required={index === 0}
                   value={lesson.topic}
                   onChange={(e) => updateLesson(index, { topic: e.target.value })}
                   placeholder="Contoh: Perkalian dan Pembagian Bilangan"
@@ -223,10 +216,6 @@ export default function TambahLaporanPage() {
                 />
               </div>
             ))}
-
-            <Button type="button" variant="ghost" onClick={addLesson} className="text-sm border border-gray-300">
-              + Tambah Pelajaran
-            </Button>
 
             <Textarea
               label="PR/Tugas"

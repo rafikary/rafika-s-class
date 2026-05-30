@@ -22,6 +22,10 @@ interface MonthlyReportData {
     date: string;
     subject: string;
     topic: string;
+    subject2?: string | null;
+    topic2?: string | null;
+    subject3?: string | null;
+    topic3?: string | null;
     enthusiasmScore: number;
     focusScore: number;
     understandingScore: number;
@@ -311,7 +315,7 @@ export class PdfService {
         currentY = 40;
       }
 
-      const rowHeight = 35;
+      const rowHeight = 45;
 
       // Alternating row colors
       if (index % 2 === 0) {
@@ -339,15 +343,22 @@ export class PdfService {
       });
       currentX += colWidths.date;
 
+      const subjects = [report.subject, report.subject2, report.subject3]
+        .filter((value): value is string => Boolean(value))
+        .join('\n');
+      const topics = [report.topic, report.topic2, report.topic3]
+        .filter((value): value is string => Boolean(value))
+        .join('\n');
+
       // Subject
-      doc.text(report.subject, currentX + 2, textY, {
+      doc.text(subjects, currentX + 2, textY, {
         width: colWidths.subject,
         align: 'left',
       });
       currentX += colWidths.subject;
 
       // Topic
-      doc.text(report.topic, currentX + 2, textY, {
+      doc.text(topics, currentX + 2, textY, {
         width: colWidths.topic,
         align: 'left',
         height: rowHeight - 10,

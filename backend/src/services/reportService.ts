@@ -37,7 +37,11 @@ export class ReportService {
     }
 
     if (subject) {
-      where.subject = { contains: subject, mode: 'insensitive' };
+      where.OR = [
+        { subject: { contains: subject, mode: 'insensitive' } },
+        { subject2: { contains: subject, mode: 'insensitive' } },
+        { subject3: { contains: subject, mode: 'insensitive' } },
+      ];
     }
 
     const [reports, total] = await Promise.all([
@@ -273,7 +277,13 @@ export class ReportService {
         : 0;
 
     // Get unique subjects (deduplicated) and sort alphabetically
-    const subjectsCovered = [...new Set(reports.map((r) => r.subject))].sort();
+    const subjectsCovered = [
+      ...new Set(
+        reports
+          .flatMap((r) => [r.subject, r.subject2, r.subject3])
+          .filter((value): value is string => Boolean(value))
+      ),
+    ].sort();
 
     return {
       student,

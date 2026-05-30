@@ -69,6 +69,10 @@ model DailyReport {
   endTime             String   @map("end_time")
   subject             String   // Matematika, IPA, Bahasa Indonesia
   topic               String
+  subject2            String?  @map("subject_2")
+  topic2              String?  @map("topic_2")
+  subject3            String?  @map("subject_3")
+  topic3              String?  @map("topic_3")
   enthusiasmScore     Int      @map("enthusiasm_score") // 1-5
   focusScore          Int      @map("focus_score") // 1-5
   understandingScore  Int      @map("understanding_score") // 1-5

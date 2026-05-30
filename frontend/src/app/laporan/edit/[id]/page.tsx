@@ -77,6 +77,9 @@ export default function EditLaporanPage() {
         attendanceStatus: report.attendanceStatus,
       });
 
+      const isCustomSubject2 = report.subject2 ? !SUBJECTS.includes(report.subject2) : false;
+      const isCustomSubject3 = report.subject3 ? !SUBJECTS.includes(report.subject3) : false;
+
       setLessons([
         {
           subject: isCustomSubject ? '' : report.subject,
@@ -84,8 +87,18 @@ export default function EditLaporanPage() {
           useCustom: isCustomSubject,
           topic: report.topic,
         },
-        { subject: '', customSubject: '', useCustom: false, topic: '' },
-        { subject: '', customSubject: '', useCustom: false, topic: '' },
+        {
+          subject: isCustomSubject2 ? '' : report.subject2 || '',
+          customSubject: isCustomSubject2 ? report.subject2 || '' : '',
+          useCustom: isCustomSubject2,
+          topic: report.topic2 || '',
+        },
+        {
+          subject: isCustomSubject3 ? '' : report.subject3 || '',
+          customSubject: isCustomSubject3 ? report.subject3 || '' : '',
+          useCustom: isCustomSubject3,
+          topic: report.topic3 || '',
+        },
       ]);
     } catch (error) {
       alert('Gagal memuat laporan: ' + handleApiError(error));
@@ -103,56 +116,40 @@ export default function EditLaporanPage() {
       return;
     }
 
-    const preparedLessons = lessons
-      .map((lesson, index) => {
-        const finalSubject = lesson.useCustom ? lesson.customSubject.trim() : lesson.subject.trim();
-        const finalTopic = lesson.topic.trim();
+    const normalizedLessons = lessons.map((lesson, index) => {
+      const finalSubject = lesson.useCustom ? lesson.customSubject.trim() : lesson.subject.trim();
+      const finalTopic = lesson.topic.trim();
 
-        if (index === 0) {
-          if (!finalSubject) {
-            throw new Error('Pelajaran 1: pilih mata pelajaran atau isi mata pelajaran lainnya');
-          }
-          if (!finalTopic) {
-            throw new Error('Pelajaran 1: isi topik/materi yang dipelajari');
-          }
-          return { subject: finalSubject, topic: finalTopic };
+      if (index === 0) {
+        if (!finalSubject) {
+          throw new Error('Pelajaran 1: pilih mata pelajaran atau isi mata pelajaran lainnya');
         }
-
-        if (!finalSubject && !finalTopic) {
-          return null;
+        if (!finalTopic) {
+          throw new Error('Pelajaran 1: isi topik/materi yang dipelajari');
         }
-
-        if (!finalSubject || !finalTopic) {
+      } else {
+        if ((!finalSubject && finalTopic) || (finalSubject && !finalTopic)) {
           throw new Error(`Pelajaran ${index + 1}: lengkapi mata pelajaran dan topik atau kosongkan keduanya`);
         }
+      }
 
-        return { subject: finalSubject, topic: finalTopic };
-      })
-      .filter((lesson): lesson is { subject: string; topic: string } => lesson !== null);
+      return { subject: finalSubject, topic: finalTopic };
+    });
 
     try {
       setSaving(true);
       await reportsApi.update(reportId, {
         ...formData,
-        subject: preparedLessons[0].subject,
-        topic: preparedLessons[0].topic,
+        subject: normalizedLessons[0].subject,
+        topic: normalizedLessons[0].topic,
+        subject2: normalizedLessons[1].subject || undefined,
+        topic2: normalizedLessons[1].topic || undefined,
+        subject3: normalizedLessons[2].subject || undefined,
+        topic3: normalizedLessons[2].topic || undefined,
         studentId: parseInt(formData.studentId),
       });
 
-      if (preparedLessons.length > 1) {
-        await Promise.all(
-          preparedLessons.slice(1).map((lesson) =>
-            reportsApi.create({
-              ...formData,
-              subject: lesson.subject,
-              topic: lesson.topic,
-              studentId: parseInt(formData.studentId),
-            })
-          )
-        );
-      }
-
-      alert(`Laporan berhasil diupdate! (${preparedLessons.length} pelajaran)`);
+      alert('Laporan berhasil diupdate!');
       router.push('/laporan');
     } catch (error) {
       const message = error instanceof Error ? error.message : handleApiError(error);
