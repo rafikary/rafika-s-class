@@ -114,18 +114,18 @@ export default function LaporanKeuanganPage() {
       <div className="relative">
         <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-3xl blur-3xl"></div>
         <div className="relative">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
             Laporan Keuangan
           </h1>
-          <p className="text-slate-600 mt-2 text-lg">Kelola pendapatan dan pembayaran dari siswa</p>
+          <p className="text-slate-600 mt-2 text-base sm:text-lg">Kelola pendapatan dan pembayaran dari siswa</p>
         </div>
       </div>
 
       {/* Period Filter */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex gap-4 items-center">
-            <div>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
+            <div className="flex-1">
               <label className="block text-sm font-medium text-slate-700 mb-2">Bulan</label>
               <select
                 value={selectedMonth}
