@@ -18,6 +18,8 @@ export default function TambahLaporanPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [students, setStudents] = useState<Student[]>([]);
+  const [showCustomSubject, setShowCustomSubject] = useState(false);
+  const [customSubject, setCustomSubject] = useState('');
   const [formData, setFormData] = useState({
     studentId: '',
     date: new Date().toISOString().split('T')[0],
@@ -55,10 +57,19 @@ export default function TambahLaporanPage() {
       return;
     }
 
+    // Use custom subject if "Lainnya" is selected
+    const finalSubject = showCustomSubject ? customSubject : formData.subject;
+    
+    if (!finalSubject) {
+      alert('Pilih mata pelajaran atau isi mata pelajaran lainnya');
+      return;
+    }
+
     try {
       setLoading(true);
       await reportsApi.create({
         ...formData,
+        subject: finalSubject,
         studentId: parseInt(formData.studentId),
       });
       alert('Laporan berhasil ditambahkan!');
@@ -132,10 +143,30 @@ export default function TambahLaporanPage() {
             />
           </CardContent>
         </Card>
+showCustomSubject ? 'Lainnya' : formData.subject}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === 'Lainnya') {
+                  setShowCustomSubject(true);
+                  setFormData({ ...formData, subject: '' });
+                } else {
+                  setShowCustomSubject(false);
+                  setCustomSubject('');
+                  setFormData({ ...formData, subject: value });
+                }
+              }}
+              options={SUBJECTS.map((s) => ({ value: s, label: s }))}
+            />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Materi Pembelajaran</CardTitle>
+            {showCustomSubject && (
+              <Input
+                label="Mata Pelajaran Lainnya"
+                required
+                value={customSubject}
+                onChange={(e) => setCustomSubject(e.target.value)}
+                placeholder="Contoh: Komputer, Menggambar, dll"
+              />
+            )}ardTitle>Materi Pembelajaran</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Select
