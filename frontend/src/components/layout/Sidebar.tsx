@@ -56,7 +56,7 @@ export default function Sidebar() {
           <div className="absolute top-1/2 right-5 w-24 h-24 bg-blue-600 rounded-full blur-2xl"></div>
         </div>
         
-        <div className="flex-col h-full relative z-10">
+        <div className="flex flex-col h-full relative z-10">
           {/* Logo */}
           <div className="px-6 py-6 border-b border-purple-200/50 bg-white/40 backdrop-blur-sm">
             <Logo size="md" showText={true} />
