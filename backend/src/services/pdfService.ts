@@ -75,9 +75,6 @@ export class PdfService {
         // MAIN DATA TABLE
         this.drawReportsTable(doc, data);
 
-        // FOOTER
-        this.drawFooter(doc);
-
         // Finalize PDF
         doc.end();
 
