@@ -14,28 +14,39 @@ function DownloadPdfContent() {
   const searchParams = useSearchParams();
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedStudent, setSelectedStudent] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [downloading, setDownloading] = useState(false);
-  const [isLocked, setIsLocked] = useState(false); // Lock mode for parents
+  const [isLocked, setIsLocked] = useState(false);
   const [studentInfo, setStudentInfo] = useState<Student | null>(null);
+  
+  // Date range mode
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
-    // Pre-fill from query params if available
     const studentId = searchParams.get('student');
-    const month = searchParams.get('month');
-    const year = searchParams.get('year');
+    const start = searchParams.get('start');
+    const end = searchParams.get('end');
     
     if (studentId) {
       setSelectedStudent(studentId);
-      setIsLocked(true); // Lock when coming from shared link
+      setIsLocked(true);
       loadSingleStudent(parseInt(studentId));
     } else {
       loadStudents();
     }
     
-    if (month) setSelectedMonth(parseInt(month));
-    if (year) setSelectedYear(parseInt(year));
+    if (start) setStartDate(start);
+    if (end) setEndDate(end);
+    
+    // Set default date range (last 30 days)
+    if (!start && !end) {
+      const today = new Date();
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(today.getDate() - 30);
+      
+      setStartDate(thirtyDaysAgo.toISOString().split('T')[0]);
+      setEndDate(today.toISOString().split('T')[0]);
+    }
   }, [searchParams]);
 
   const loadStudents = async () => {
@@ -43,7 +54,7 @@ function DownloadPdfContent() {
       const data = await studentsApi.getAll();
       setStudents(data);
     } catch (error) {
-      alert('Failed to load student data: ' + handleApiError(error));
+      alert('Failed to load students: ' + handleApiError(error));
     }
   };
 
@@ -52,28 +63,33 @@ function DownloadPdfContent() {
       const data = await studentsApi.getById(studentId);
       setStudentInfo(data);
     } catch (error) {
-      alert('Failed to load student data: ' + handleApiError(error));
+      alert('Failed to load student: ' + handleApiError(error));
     }
   };
 
   const handleDownloadPdf = async () => {
     if (!selectedStudent) {
-      alert('Please select a student first');
+      alert('Please select a student');
+      return;
+    }
+    
+    if (!startDate || !endDate) {
+      alert('Please select date range');
       return;
     }
 
     try {
       setDownloading(true);
       const blob = await reportsApi.exportPdf(parseInt(selectedStudent), {
-        month: selectedMonth,
-        year: selectedYear,
+        startDate,
+        endDate,
       });
 
-      const student = students.find((s) => s.id === parseInt(selectedStudent));
+      const studentName = isLocked && studentInfo ? studentInfo.name : students.find((s) => s.id === parseInt(selectedStudent))?.name;
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Laporan_${student?.name.replace(/\s+/g, '_')}_${MONTHS[selectedMonth - 1]}_${selectedYear}.pdf`;
+      a.download = `Learning_Report_${studentName?.replace(/\s+/g, '_')}_${startDate}_${endDate}.pdf`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -86,8 +102,15 @@ function DownloadPdfContent() {
       setDownloading(false);
     }
   };
-
-  const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
+  
+  const handleQuickPeriod = (days: number) => {
+    const today = new Date();
+    const startPeriod = new Date();
+    startPeriod.setDate(today.getDate() - days);
+    
+    setStartDate(startPeriod.toISOString().split('T')[0]);
+    setEndDate(today.toISOString().split('T')[0]);
+  };
 
   return (
     <div className="min-h-screen bg-white py-8 sm:py-12 px-4 sm:px-6">
@@ -110,6 +133,7 @@ function DownloadPdfContent() {
         {/* Form Card */}
         <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 sm:p-8 mb-6">
           <div className="space-y-6">
+            {/* Student Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Student Name <span className="text-red-500">*</span>
@@ -119,16 +143,9 @@ function DownloadPdfContent() {
                   <p className="text-sm font-medium text-gray-900">
                     {studentInfo.name} ({studentInfo.grade})
                   </p>
-                  {studentInfo.salaryScheduleType === 'monthly' && studentInfo.monthlyPaymentDate && (
-                    <p className="text-xs text-gray-600 mt-1">
-                      Payment: Monthly on the {studentInfo.monthlyPaymentDate}th
-                    </p>
-                  )}
-                  {studentInfo.salaryScheduleType === 'per_10_meetings' && (
-                    <p className="text-xs text-gray-600 mt-1">
-                      Payment: Every 10 meetings
-                    </p>
-                  )}
+                  <p className="text-xs text-gray-600 mt-1">
+                    🔒 Locked to this student
+                  </p>
                 </div>
               ) : (
                 <Select
@@ -140,45 +157,72 @@ function DownloadPdfContent() {
               )}
             </div>
 
+            {/* Quick Period Buttons */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Quick Select Period
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleQuickPeriod(7)}
+                  className="text-xs"
+                >
+                  Last 7 Days
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleQuickPeriod(14)}
+                  className="text-xs"
+                >
+                  Last 14 Days
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleQuickPeriod(30)}
+                  className="text-xs"
+                >
+                  Last 30 Days
+                </Button>
+              </div>
+            </div>
+
+            {/* Date Range */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Month <span className="text-red-500">*</span>
+                  Start Date <span className="text-red-500">*</span>
                 </label>
-                <Select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                  options={MONTHS.map((m, i) => ({ value: i + 1, label: m }))}
-                  className="w-full"
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Year <span className="text-red-500">*</span>
+                  End Date <span className="text-red-500">*</span>
                 </label>
-                <Select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                  options={years.map((y) => ({ value: y, label: y.toString() }))}
-                  className="w-full"
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
 
-            {isLocked && studentInfo?.salaryScheduleType === 'monthly' && studentInfo.monthlyPaymentDate && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-xs text-yellow-800">
-                  <strong>Note:</strong> For monthly payment on the {studentInfo.monthlyPaymentDate}th, 
-                  the report covers from the {studentInfo.monthlyPaymentDate === 1 ? '1st' : `${studentInfo.monthlyPaymentDate + 1}th`} of the previous month 
-                  to the {studentInfo.monthlyPaymentDate}th of the selected month.
-                </p>
-              </div>
-            )}
-
             <Button
               onClick={handleDownloadPdf}
-              disabled={downloading || !selectedStudent}
+              disabled={downloading || !selectedStudent || !startDate || !endDate}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 rounded-xl transition-colors"
             >
               {downloading ? (
@@ -205,7 +249,7 @@ function DownloadPdfContent() {
             <div className="flex-1">
               <h3 className="text-sm font-semibold text-gray-900 mb-2">Report Information</h3>
               <p className="text-xs text-gray-600 leading-relaxed">
-                The report contains a summary of the student's learning for one month, including:
+                The report contains a summary of student learning for the selected period, including:
               </p>
               <ul className="mt-3 space-y-1.5 text-xs text-gray-600">
                 <li className="flex items-center gap-2">
@@ -228,6 +272,11 @@ function DownloadPdfContent() {
             </div>
           </div>
         </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
 
         {/* Footer */}
         <div className="text-center mt-8 text-xs text-gray-400">
@@ -244,7 +293,7 @@ export default function DownloadPdfPage() {
       <div className="min-h-screen bg-white py-8 px-4">
         <div className="max-w-lg mx-auto text-center mt-20">
           <Loader2 className="w-10 h-10 animate-spin mx-auto text-blue-600" />
-          <p className="mt-4 text-sm text-gray-600">Loading page...</p>
+          <p className="mt-4 text-sm text-gray-600">Memuat halaman...</p>
         </div>
       </div>
     }>

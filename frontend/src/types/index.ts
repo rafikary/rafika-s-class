@@ -156,8 +156,10 @@ export interface ReportQueryParams {
 }
 
 export interface MonthlyReportQuery {
-  month: number;
-  year: number;
+  month?: number;      // Optional - for backward compatibility
+  year?: number;       // Optional - for backward compatibility
+  startDate?: string;  // ISO date format (YYYY-MM-DD)
+  endDate?: string;    // ISO date format (YYYY-MM-DD)
 }
 
 // WhatsApp types
