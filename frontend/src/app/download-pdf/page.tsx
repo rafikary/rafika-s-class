@@ -112,26 +112,26 @@ function DownloadPdfContent() {
   };
 
   return (
-    <div className="min-h-screen bg-white pt-2 pb-4 sm:pt-3 sm:pb-6 px-4 sm:px-6">
+    <div className="min-h-screen bg-white pt-0 pb-2 sm:pt-1 sm:pb-3 px-4 sm:px-6">
       <div className="max-w-lg mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-4 sm:mb-5">
-          <div className="mb-3">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-50 rounded-xl mb-2">
-              <FileText className="w-6 h-6 text-blue-600" strokeWidth={1.5} />
+        <div className="text-center mb-2 sm:mb-3">
+          <div className="mb-1">
+            <div className="hidden sm:inline-flex items-center justify-center w-10 h-10 bg-blue-50 rounded-lg mb-1.5">
+              <FileText className="w-5 h-5 text-blue-600" strokeWidth={1.5} />
             </div>
-            <h1 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1.5">
+            <h1 className="text-base sm:text-lg font-semibold text-gray-900 mb-0.5">
               Student Learning Report
             </h1>
-            <p className="text-sm text-gray-500">
+            <p className="text-[11px] text-gray-500">
               Study with Miss Fika
             </p>
           </div>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 sm:p-6 mb-5">
-          <div className="space-y-4">
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-3 sm:p-5 mb-4">
+          <div className="space-y-3">
             {/* Student Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -254,7 +254,7 @@ function DownloadPdfContent() {
         </div>
 
         {/* Info Box */}
-        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+        <div className="bg-blue-50 border border-blue-100 rounded-xl p-3">
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center mt-0.5">
               <span className="text-white text-xs font-bold">i</span>
@@ -287,7 +287,7 @@ function DownloadPdfContent() {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-5 text-xs text-gray-400">
+        <div className="text-center mt-3 text-xs text-gray-400">
           <p>Learn • Grow • Achieve</p>
         </div>
       </div>
