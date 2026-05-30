@@ -112,15 +112,15 @@ function DownloadPdfContent() {
   };
 
   return (
-    <div className="min-h-screen bg-white py-8 sm:py-12 px-4 sm:px-6">
+    <div className="min-h-screen bg-white py-4 sm:py-6 px-4 sm:px-6">
       <div className="max-w-lg mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-8 sm:mb-12">
-          <div className="mb-6">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-50 rounded-2xl mb-4">
-              <FileText className="w-10 h-10 text-blue-600" strokeWidth={1.5} />
+        <div className="text-center mb-5 sm:mb-6">
+          <div className="mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-50 rounded-xl mb-3">
+              <FileText className="w-7 h-7 text-blue-600" strokeWidth={1.5} />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
+            <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
               Student Learning Report
             </h1>
             <p className="text-sm text-gray-500">
@@ -130,19 +130,19 @@ function DownloadPdfContent() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 sm:p-8 mb-6">
-          <div className="space-y-6">
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 sm:p-6 mb-5">
+          <div className="space-y-4">
             {/* Student Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Student Name <span className="text-red-500">*</span>
               </label>
               {isLocked && studentInfo ? (
-                <div className="px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="px-3 py-2.5 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm font-medium text-gray-900">
                     {studentInfo.name} ({studentInfo.grade})
                   </p>
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-[11px] text-gray-600 mt-0.5">
                     🔒 Locked to this student
                   </p>
                 </div>
@@ -194,15 +194,15 @@ function DownloadPdfContent() {
             {/* Date Range */}
             <div>
               {isLocked && (
-                <div className="mb-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
-                  <p className="text-xs text-amber-800">
+                <div className="mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-[11px] text-amber-800">
                     📅 Report period selected by teacher
                   </p>
                 </div>
               )}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     Start Date <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -210,14 +210,14 @@ function DownloadPdfContent() {
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
                     disabled={isLocked}
-                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
                       isLocked ? 'bg-gray-100 cursor-not-allowed' : ''
                     }`}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
                     End Date <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -225,7 +225,7 @@ function DownloadPdfContent() {
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                     disabled={isLocked}
-                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${
                       isLocked ? 'bg-gray-100 cursor-not-allowed' : ''
                     }`}
                   />
@@ -236,7 +236,7 @@ function DownloadPdfContent() {
             <Button
               onClick={handleDownloadPdf}
               disabled={downloading || !selectedStudent || !startDate || !endDate}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 rounded-xl transition-colors"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition-colors"
             >
               {downloading ? (
                 <>
@@ -254,7 +254,7 @@ function DownloadPdfContent() {
         </div>
 
         {/* Info Box */}
-        <div className="bg-blue-50 border border-blue-100 rounded-xl p-5">
+        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center mt-0.5">
               <span className="text-white text-xs font-bold">i</span>
@@ -287,7 +287,7 @@ function DownloadPdfContent() {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8 text-xs text-gray-400">
+        <div className="text-center mt-5 text-xs text-gray-400">
           <p>Learn • Grow • Achieve</p>
         </div>
       </div>
