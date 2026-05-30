@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import reportService from '../services/reportService';
 import exportExcelService from '../services/exportExcelService';
+import pdfService from '../services/pdfService';
 import { successResponse, errorResponse, createError } from '../utils/response';
 import { asyncHandler } from '../utils/errorHandler';
 import {
@@ -268,6 +269,75 @@ export class ReportController {
         message,
         parentWhatsapp: monthlyReport.student.parentWhatsapp,
       });
+    } catch (error: any) {
+      return errorResponse(res, createError('ERROR', error.message), 500);
+    }
+  });
+
+  /**
+   * Export monthly report as professional PDF
+   */
+  exportMonthlyPdf = asyncHandler(async (req: Request, res: Response) => {
+    const studentId = parseInt(req.params.studentId);
+
+    if (isNaN(studentId)) {
+      return errorResponse(res, createError('INVALID_ID', 'Student ID tidak valid'), 400);
+    }
+
+    const validation = monthlyReportQuerySchema.safeParse(req.query);
+
+    if (!validation.success) {
+      return errorResponse(
+        res,
+        createError('VALIDATION_ERROR', 'Parameter tidak valid', validation.error.errors),
+        400
+      );
+    }
+
+    try {
+      const monthlyReport = await reportService.getMonthlyReport({
+        studentId,
+        month: validation.data.month,
+        year: validation.data.year,
+      });
+
+      // Format data for PDF
+      const pdfData = {
+        student: {
+          name: monthlyReport.student.name,
+          grade: monthlyReport.student.grade,
+          parentName: monthlyReport.student.parentName,
+        },
+        period: {
+          month: monthlyReport.period.monthName,
+          year: monthlyReport.period.year,
+        },
+        summary: {
+          totalSessions: monthlyReport.summary.totalSessions,
+          presentCount: monthlyReport.summary.present,
+          avgEnthusiasm: monthlyReport.summary.avgEnthusiasm,
+          avgFocus: monthlyReport.summary.avgFocus,
+          avgUnderstanding: monthlyReport.summary.avgUnderstanding,
+        },
+        subjects: monthlyReport.summary.subjectsCovered,
+        reports: monthlyReport.reports.map((r: any) => ({
+          date: new Date(r.date).toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+          }),
+          subject: r.subject,
+          topic: r.topic,
+          enthusiasmScore: r.enthusiasmScore,
+          focusScore: r.focusScore,
+          understandingScore: r.understandingScore,
+          homework: r.homework,
+          progressNotes: r.progressNotes,
+          parentNotes: r.parentNotes,
+        })),
+      };
+
+      await pdfService.generateMonthlyReport(pdfData, res);
     } catch (error: any) {
       return errorResponse(res, createError('ERROR', error.message), 500);
     }

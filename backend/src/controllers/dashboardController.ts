@@ -28,6 +28,16 @@ export class DashboardController {
     const notifications = await dashboardService.getNotifications();
     return successResponse(res, notifications);
   });
+
+  getTodaySchedule = asyncHandler(async (req: Request, res: Response) => {
+    const schedule = await dashboardService.getTodaySchedule();
+    return successResponse(res, schedule);
+  });
+
+  getStudentHealth = asyncHandler(async (req: Request, res: Response) => {
+    const healthIndicators = await dashboardService.getStudentHealthIndicators();
+    return successResponse(res, healthIndicators);
+  });
 }
 
 export default new DashboardController();

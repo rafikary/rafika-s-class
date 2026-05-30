@@ -136,6 +136,14 @@ export const reportsApi = {
     return response.data;
   },
 
+  exportPdf: async (studentId: number, query: MonthlyReportQuery): Promise<Blob> => {
+    const response = await api.get(`/reports/export/pdf/${studentId}`, {
+      params: query,
+      responseType: 'blob',
+    });
+    return response.data;
+  },
+
   getWhatsAppLink: async (
     studentId: number,
     query: MonthlyReportQuery
@@ -164,6 +172,16 @@ export const dashboardApi = {
 
   getNotifications: async (): Promise<any[]> => {
     const { data } = await api.get<ApiResponse<any[]>>('/dashboard/notifications');
+    return data.data || [];
+  },
+
+  getTodaySchedule: async (): Promise<any> => {
+    const { data } = await api.get<ApiResponse<any>>('/dashboard/today-schedule');
+    return data.data!;
+  },
+
+  getStudentHealth: async (): Promise<any[]> => {
+    const { data } = await api.get<ApiResponse<any[]>>('/dashboard/student-health');
     return data.data || [];
   },
 };

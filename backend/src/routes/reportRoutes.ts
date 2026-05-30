@@ -12,6 +12,9 @@ router.get('/monthly/:studentId', reportController.getMonthlyReport);
 // GET /api/reports/export/excel/:studentId - Export to Excel
 router.get('/export/excel/:studentId', reportController.exportMonthlyExcel);
 
+// GET /api/reports/export/pdf/:studentId - Export to PDF (NEW!)
+router.get('/export/pdf/:studentId', reportController.exportMonthlyPdf);
+
 // GET /api/reports/whatsapp/:studentId - Get WhatsApp link with message
 router.get('/whatsapp/:studentId', reportController.getWhatsAppLink);
 

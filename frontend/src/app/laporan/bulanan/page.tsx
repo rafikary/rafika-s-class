@@ -81,6 +81,33 @@ export default function LaporanBulananPage() {
     }
   };
 
+  const handleExportPdf = async () => {
+    if (!selectedStudent) return;
+
+    try {
+      setExporting(true);
+      const blob = await reportsApi.exportPdf(parseInt(selectedStudent), {
+        month: selectedMonth,
+        year: selectedYear,
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Laporan_${monthlyReport?.student.name.replace(/\s+/g, '_')}_${MONTHS[selectedMonth - 1]}_${selectedYear}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      alert('Laporan PDF berhasil diunduh!');
+    } catch (error) {
+      alert('Gagal export PDF: ' + handleApiError(error));
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const handleGetWhatsAppLink = async () => {
     if (!selectedStudent) return;
 
@@ -185,6 +212,14 @@ export default function LaporanBulananPage() {
                   </p>
                 </div>
                 <div className="flex gap-2">
+                  <Button
+                    onClick={handleExportPdf}
+                    disabled={exporting}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  >
+                    <Download size={20} className="mr-2" />
+                    {exporting ? 'Exporting...' : 'Download PDF 📄'}
+                  </Button>
                   <Button
                     onClick={handleExportExcel}
                     disabled={exporting}
