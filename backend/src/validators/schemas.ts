@@ -31,7 +31,7 @@ export const createScheduleSchema = z.object({
 export const updateScheduleSchema = createScheduleSchema.partial();
 
 // Daily Report validation
-export const createDailyReportSchema = z.object({
+const baseDailyReportSchema = z.object({
   studentId: z.number().int().positive('Student ID harus valid'),
   date: z.string().refine((val) => !isNaN(Date.parse(val)), 'Format tanggal tidak valid'),
   startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Format waktu tidak valid'),
@@ -49,7 +49,9 @@ export const createDailyReportSchema = z.object({
   progressNotes: z.string().optional(),
   parentNotes: z.string().optional(),
   attendanceStatus: z.enum(['present', 'excused', 'sick', 'cancelled']).optional(),
-}).superRefine((data, ctx) => {
+});
+
+export const createDailyReportSchema = baseDailyReportSchema.superRefine((data, ctx) => {
   if ((data.subject2 && !data.topic2) || (!data.subject2 && data.topic2)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -67,7 +69,25 @@ export const createDailyReportSchema = z.object({
   }
 });
 
-export const updateDailyReportSchema = createDailyReportSchema.partial();
+export const updateDailyReportSchema = baseDailyReportSchema
+  .partial()
+  .superRefine((data, ctx) => {
+    if ((data.subject2 && !data.topic2) || (!data.subject2 && data.topic2)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Pelajaran 2 harus diisi lengkap (mata pelajaran dan topik)',
+        path: ['subject2'],
+      });
+    }
+
+    if ((data.subject3 && !data.topic3) || (!data.subject3 && data.topic3)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Pelajaran 3 harus diisi lengkap (mata pelajaran dan topik)',
+        path: ['subject3'],
+      });
+    }
+  });
 
 // Query validation
 export const paginationSchema = z.object({
