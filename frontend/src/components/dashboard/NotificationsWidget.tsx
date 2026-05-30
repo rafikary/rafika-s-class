@@ -31,10 +31,13 @@ export function NotificationsWidget() {
 
   const loadNotifications = async () => {
     try {
-      const data = await dashboardApi.getNotifications();
-      setNotifications(data);
+      // Temporarily disable notifications - endpoint not fully implemented
+      setNotifications([]);
+      // const data = await dashboardApi.getNotifications();
+      // setNotifications(data);
     } catch (error) {
       console.error('Failed to load notifications:', error);
+      setNotifications([]);
     } finally {
       setLoading(false);
     }
