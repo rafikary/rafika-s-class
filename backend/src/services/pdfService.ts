@@ -456,13 +456,13 @@ export class PdfService {
           doc.rect(startX, rowStartY, pageWidth, rowHeight).fill('#FFFFFF');
         }
 
-        doc.fillColor('#000000');
+        doc.fillColor('#000000').font('Helvetica');
 
         currentX = startX;
 
         // No - only show on first lesson row
         if (lessonIndex === 0) {
-          doc.fontSize(8).text((index + 1).toString(), currentX + 5, textY, {
+          doc.fontSize(8).font('Helvetica').text((index + 1).toString(), currentX + 5, textY, {
             width: colWidths.no,
             align: 'center',
           });
@@ -471,7 +471,7 @@ export class PdfService {
 
         // Tanggal - only show on first lesson row
         if (lessonIndex === 0) {
-          doc.fontSize(8).text(report.date, currentX + 2, textY, {
+          doc.fontSize(8).font('Helvetica').text(report.date, currentX + 2, textY, {
             width: colWidths.date,
             align: 'left',
           });
@@ -479,14 +479,14 @@ export class PdfService {
         currentX += colWidths.date;
 
         // Subject - show for each lesson
-        doc.fontSize(8).text(lesson.subject, currentX + 2, textY, {
+        doc.fontSize(8).font('Helvetica').text(lesson.subject, currentX + 2, textY, {
           width: colWidths.subject - 4,
           align: 'left',
         });
         currentX += colWidths.subject;
 
         // Topic - show for each lesson
-        doc.fontSize(8).text(lesson.topic, currentX + 2, textY, {
+        doc.fontSize(8).font('Helvetica').text(lesson.topic, currentX + 2, textY, {
           width: colWidths.topic - 4,
           align: 'left',
         });
@@ -495,7 +495,7 @@ export class PdfService {
         // Scores - only show on first lesson row
         if (lessonIndex === 0) {
           const semangat = `${report.enthusiasmScore}/5`;
-          doc.fontSize(8).text(semangat, currentX + 2, textY, {
+          doc.fontSize(8).font('Helvetica').text(semangat, currentX + 2, textY, {
             width: colWidths.semangat,
             align: 'center',
           });
@@ -504,7 +504,7 @@ export class PdfService {
 
         if (lessonIndex === 0) {
           const fokus = `${report.focusScore}/5`;
-          doc.fontSize(8).text(fokus, currentX + 2, textY, {
+          doc.fontSize(8).font('Helvetica').text(fokus, currentX + 2, textY, {
             width: colWidths.fokus,
             align: 'center',
           });
@@ -513,7 +513,7 @@ export class PdfService {
 
         if (lessonIndex === 0) {
           const pemahaman = `${report.understandingScore}/5`;
-          doc.fontSize(8).text(pemahaman, currentX + 2, textY, {
+          doc.fontSize(8).font('Helvetica').text(pemahaman, currentX + 2, textY, {
             width: colWidths.pemahaman,
             align: 'center',
           });
@@ -522,7 +522,7 @@ export class PdfService {
 
         // PR - only show on first lesson row
         if (lessonIndex === 0) {
-          doc.fontSize(7).text(prText, currentX + 2, textY, {
+          doc.fontSize(7).font('Helvetica').text(prText, currentX + 2, textY, {
             width: colWidths.pr - 4,
             align: 'left',
           });
@@ -531,7 +531,7 @@ export class PdfService {
 
         // Notes - only show on first lesson row
         if (lessonIndex === 0) {
-          doc.fontSize(7).text(notesText, currentX + 2, textY, {
+          doc.fontSize(7).font('Helvetica').text(notesText, currentX + 2, textY, {
             width: colWidths.notes - 4,
             align: 'left',
           });
