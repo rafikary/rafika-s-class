@@ -293,6 +293,45 @@ export class PdfService {
 
       doc.text('Catatan', headerX + 2, textY, { width: colWidths.notes, align: 'center' });
 
+      // Draw vertical lines for header
+      doc.strokeColor('#4B5563').lineWidth(1);
+      let x = startX;
+      
+      // Left border
+      doc.moveTo(x, headerY).lineTo(x, headerY + 20).stroke();
+      x += colWidths.no;
+      
+      doc.moveTo(x, headerY).lineTo(x, headerY + 20).stroke();
+      x += colWidths.date;
+      
+      doc.moveTo(x, headerY).lineTo(x, headerY + 20).stroke();
+      x += colWidths.subject;
+      
+      doc.moveTo(x, headerY).lineTo(x, headerY + 20).stroke();
+      x += colWidths.topic;
+      
+      doc.moveTo(x, headerY).lineTo(x, headerY + 20).stroke();
+      x += colWidths.semangat;
+      
+      doc.moveTo(x, headerY).lineTo(x, headerY + 20).stroke();
+      x += colWidths.fokus;
+      
+      doc.moveTo(x, headerY).lineTo(x, headerY + 20).stroke();
+      x += colWidths.pemahaman;
+      
+      doc.moveTo(x, headerY).lineTo(x, headerY + 20).stroke();
+      x += colWidths.pr;
+      
+      doc.moveTo(x, headerY).lineTo(x, headerY + 20).stroke();
+      x += colWidths.notes;
+      
+      // Right border
+      doc.moveTo(x, headerY).lineTo(x, headerY + 20).stroke();
+
+      // Top and bottom horizontal lines
+      doc.moveTo(startX, headerY).lineTo(startX + pageWidth, headerY).stroke();
+      doc.moveTo(startX, headerY + 20).lineTo(startX + pageWidth, headerY + 20).stroke();
+
       return headerY + 20;
     };
 
