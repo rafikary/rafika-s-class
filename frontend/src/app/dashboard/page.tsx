@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Users, FileText, TrendingUp, DollarSign } from 'lucide-react';
-import { NotificationsWidget } from '@/components/dashboard/NotificationsWidget';
 import { dashboardApi } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -141,9 +140,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Notifications & Reminders - OTOMATIS! */}
-      <NotificationsWidget />
 
       {/* Quick Actions */}
       <Card>

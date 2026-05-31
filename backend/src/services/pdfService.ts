@@ -302,139 +302,217 @@ export class PdfService {
     // Draw table rows
     doc.fillColor('#000000').font('Helvetica');
 
-    const minRowHeight = 28;
-    const rowPaddingY = 10;
-    const rowLineGap = 1;
+    const minRowHeight = 25;
+    const rowPaddingY = 8;
 
     const measureTextHeight = (text: string, width: number, fontSize: number) => {
       doc.fontSize(fontSize).font('Helvetica');
-      return doc.heightOfString(text, { width, align: 'left', lineGap: rowLineGap });
+      return doc.heightOfString(text, { width, align: 'left' });
+    };
+
+    // Helper to draw vertical lines for all columns
+    const drawVerticalLines = (y: number, height: number) => {
+      doc.strokeColor('#E5E7EB').lineWidth(0.5);
+
+      let x = startX;
+      // Line before No column
+      doc.moveTo(x, y).lineTo(x, y + height).stroke();
+      x += colWidths.no;
+
+      // Line after No, before Date
+      doc.moveTo(x, y).lineTo(x, y + height).stroke();
+      x += colWidths.date;
+
+      // Line after Date, before Subject
+      doc.moveTo(x, y).lineTo(x, y + height).stroke();
+      x += colWidths.subject;
+
+      // Line after Subject, before Topic
+      doc.moveTo(x, y).lineTo(x, y + height).stroke();
+      x += colWidths.topic;
+
+      // Line after Topic, before Semangat
+      doc.moveTo(x, y).lineTo(x, y + height).stroke();
+      x += colWidths.semangat;
+
+      // Line after Semangat, before Fokus
+      doc.moveTo(x, y).lineTo(x, y + height).stroke();
+      x += colWidths.fokus;
+
+      // Line after Fokus, before Pemahaman
+      doc.moveTo(x, y).lineTo(x, y + height).stroke();
+      x += colWidths.pemahaman;
+
+      // Line after Pemahaman, before PR
+      doc.moveTo(x, y).lineTo(x, y + height).stroke();
+      x += colWidths.pr;
+
+      // Line after PR, before Notes
+      doc.moveTo(x, y).lineTo(x, y + height).stroke();
+      x += colWidths.notes;
+
+      // Final right border
+      doc.moveTo(x, y).lineTo(x, y + height).stroke();
     };
 
     data.reports.forEach((report, index) => {
-      const subjectsText = [report.subject, report.subject2, report.subject3]
-        .filter((value): value is string => Boolean(value))
-        .join('\n');
-      const topicsText = [report.topic, report.topic2, report.topic3]
-        .filter((value): value is string => Boolean(value))
-        .join('\n');
+      // Collect all subjects/topics
+      const lessons: Array<{ subject: string; topic: string }> = [];
+      if (report.subject && report.topic) {
+        lessons.push({ subject: report.subject, topic: report.topic });
+      }
+      if (report.subject2 && report.topic2) {
+        lessons.push({ subject: report.subject2, topic: report.topic2 });
+      }
+      if (report.subject3 && report.topic3) {
+        lessons.push({ subject: report.subject3, topic: report.topic3 });
+      }
+
+      if (lessons.length === 0) return;
+
       const prText = report.homework || '-';
       const notesText = report.progressNotes || '-';
 
-      const subjectsHeight = measureTextHeight(subjectsText, colWidths.subject, 8);
-      const topicsHeight = measureTextHeight(topicsText, colWidths.topic, 8);
-      const prHeight = measureTextHeight(prText, colWidths.pr, 7);
-      const notesHeight = measureTextHeight(notesText, colWidths.notes, 7);
+      // Measure heights for each lesson row
+      const lessonRowHeights = lessons.map((lesson) => {
+        const subjectHeight = measureTextHeight(lesson.subject, colWidths.subject - 4, 8);
+        const topicHeight = measureTextHeight(lesson.topic, colWidths.topic - 4, 8);
+        return Math.max(minRowHeight, subjectHeight, topicHeight) + rowPaddingY;
+      });
 
-      const rowHeight = Math.max(
-        minRowHeight,
-        subjectsHeight,
-        topicsHeight,
-        prHeight,
-        notesHeight,
-      ) + rowPaddingY;
+      // For first row, also consider PR and Notes height
+      const prHeight = measureTextHeight(prText, colWidths.pr - 4, 7);
+      const notesHeight = measureTextHeight(notesText, colWidths.notes - 4, 7);
+      lessonRowHeights[0] = Math.max(
+        lessonRowHeights[0],
+        prHeight + rowPaddingY,
+        notesHeight + rowPaddingY
+      );
+
+      const totalRowHeight = lessonRowHeights.reduce((sum, h) => sum + h, 0);
 
       // Check if need new page
-      if (currentY + rowHeight > doc.page.height - 60) {
+      if (currentY + totalRowHeight > doc.page.height - 60) {
         doc.addPage({ layout: 'landscape' });
-        
-        // Add watermark to new page (save Y position)
+
+        // Add watermark to new page
         const savedY = doc.y;
         this.drawWatermark(doc);
         doc.y = savedY;
-        
+
         currentY = drawTableHeader(40);
       }
 
-      const textY = currentY + 5;
+      // Draw each lesson row
+      let rowStartY = currentY;
 
-      // Alternating row colors
-      if (index % 2 === 0) {
-        doc.rect(startX, currentY, pageWidth, rowHeight).fill('#F9FAFB');
-      } else {
-        doc.rect(startX, currentY, pageWidth, rowHeight).fill('#FFFFFF');
-      }
+      lessons.forEach((lesson, lessonIndex) => {
+        const rowHeight = lessonRowHeights[lessonIndex];
+        const textY = rowStartY + 5;
 
-      doc.fillColor('#000000');
+        // Alternating row colors (based on report index, not lesson index)
+        if (index % 2 === 0) {
+          doc.rect(startX, rowStartY, pageWidth, rowHeight).fill('#F9FAFB');
+        } else {
+          doc.rect(startX, rowStartY, pageWidth, rowHeight).fill('#FFFFFF');
+        }
 
-      currentX = startX;
-      // No
-      doc.fontSize(8).text((index + 1).toString(), currentX + 5, textY, {
-        width: colWidths.no,
-        align: 'center',
+        doc.fillColor('#000000');
+
+        currentX = startX;
+
+        // No - only show on first lesson row
+        if (lessonIndex === 0) {
+          doc.fontSize(8).text((index + 1).toString(), currentX + 5, textY, {
+            width: colWidths.no,
+            align: 'center',
+          });
+        }
+        currentX += colWidths.no;
+
+        // Tanggal - only show on first lesson row
+        if (lessonIndex === 0) {
+          doc.fontSize(8).text(report.date, currentX + 2, textY, {
+            width: colWidths.date,
+            align: 'left',
+          });
+        }
+        currentX += colWidths.date;
+
+        // Subject - show for each lesson
+        doc.fontSize(8).text(lesson.subject, currentX + 2, textY, {
+          width: colWidths.subject - 4,
+          align: 'left',
+        });
+        currentX += colWidths.subject;
+
+        // Topic - show for each lesson
+        doc.fontSize(8).text(lesson.topic, currentX + 2, textY, {
+          width: colWidths.topic - 4,
+          align: 'left',
+        });
+        currentX += colWidths.topic;
+
+        // Scores - only show on first lesson row
+        if (lessonIndex === 0) {
+          const semangat = `${report.enthusiasmScore}/5`;
+          doc.fontSize(8).text(semangat, currentX + 2, textY, {
+            width: colWidths.semangat,
+            align: 'center',
+          });
+        }
+        currentX += colWidths.semangat;
+
+        if (lessonIndex === 0) {
+          const fokus = `${report.focusScore}/5`;
+          doc.fontSize(8).text(fokus, currentX + 2, textY, {
+            width: colWidths.fokus,
+            align: 'center',
+          });
+        }
+        currentX += colWidths.fokus;
+
+        if (lessonIndex === 0) {
+          const pemahaman = `${report.understandingScore}/5`;
+          doc.fontSize(8).text(pemahaman, currentX + 2, textY, {
+            width: colWidths.pemahaman,
+            align: 'center',
+          });
+        }
+        currentX += colWidths.pemahaman;
+
+        // PR - only show on first lesson row
+        if (lessonIndex === 0) {
+          doc.fontSize(7).text(prText, currentX + 2, textY, {
+            width: colWidths.pr - 4,
+            align: 'left',
+          });
+        }
+        currentX += colWidths.pr;
+
+        // Notes - only show on first lesson row
+        if (lessonIndex === 0) {
+          doc.fontSize(7).text(notesText, currentX + 2, textY, {
+            width: colWidths.notes - 4,
+            align: 'left',
+          });
+        }
+
+        // Draw horizontal line at bottom of this row
+        doc
+          .strokeColor('#E5E7EB')
+          .lineWidth(0.5)
+          .moveTo(startX, rowStartY + rowHeight)
+          .lineTo(startX + pageWidth, rowStartY + rowHeight)
+          .stroke();
+
+        // Draw vertical lines
+        drawVerticalLines(rowStartY, rowHeight);
+
+        rowStartY += rowHeight;
       });
-      currentX += colWidths.no;
 
-      // Tanggal
-      doc.text(report.date, currentX + 2, textY, {
-        width: colWidths.date,
-        align: 'left',
-      });
-      currentX += colWidths.date;
-
-      // Subject
-      doc.text(subjectsText, currentX + 2, textY, {
-        width: colWidths.subject,
-        align: 'left',
-        lineGap: rowLineGap,
-      });
-      currentX += colWidths.subject;
-
-      // Topic
-      doc.text(topicsText, currentX + 2, textY, {
-        width: colWidths.topic,
-        align: 'left',
-        lineGap: rowLineGap,
-      });
-      currentX += colWidths.topic;
-
-      // Semangat (bintang)
-      const semangat = `${report.enthusiasmScore}/5`;
-      doc.text(semangat, currentX + 2, textY, {
-        width: colWidths.semangat,
-        align: 'center',
-      });
-      currentX += colWidths.semangat;
-
-      // Fokus (bintang)
-      const fokus = `${report.focusScore}/5`;
-      doc.text(fokus, currentX + 2, textY, {
-        width: colWidths.fokus,
-        align: 'center',
-      });
-      currentX += colWidths.fokus;
-
-      // Pemahaman (bintang)
-      const pemahaman = `${report.understandingScore}/5`;
-      doc.text(pemahaman, currentX + 2, textY, {
-        width: colWidths.pemahaman,
-        align: 'center',
-      });
-      currentX += colWidths.pemahaman;
-
-      // PR
-      doc.fontSize(7).text(prText, currentX + 2, textY, {
-        width: colWidths.pr,
-        align: 'left',
-        lineGap: rowLineGap,
-      });
-      currentX += colWidths.pr;
-
-      // Notes
-      doc.text(notesText, currentX + 2, textY, {
-        width: colWidths.notes,
-        align: 'left',
-        lineGap: rowLineGap,
-      });
-
-      // Draw row border
-      doc
-        .strokeColor('#E5E7EB')
-        .lineWidth(0.5)
-        .rect(startX, currentY, pageWidth, rowHeight)
-        .stroke();
-
-      currentY += rowHeight;
+      currentY = rowStartY;
     });
 
     doc.y = currentY + 10;
