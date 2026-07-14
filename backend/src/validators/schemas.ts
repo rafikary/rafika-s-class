@@ -31,17 +31,35 @@ export const createScheduleSchema = z.object({
 export const updateScheduleSchema = createScheduleSchema.partial();
 
 // Daily Report validation
+const requiredText = (message: string) => z.string().trim().min(1, message);
+
+const optionalLessonText = (message: string) =>
+  z.preprocess(
+    (value) => {
+      if (typeof value !== 'string') {
+        return value;
+      }
+
+      const trimmedValue = value.trim();
+      return trimmedValue === '' ? null : trimmedValue;
+    },
+    z.string().min(1, message).nullable().optional()
+  );
+
+const hasLessonValue = (value?: string | null) =>
+  typeof value === 'string' && value.length > 0;
+
 const baseDailyReportSchema = z.object({
   studentId: z.number().int().positive('Student ID harus valid'),
-  date: z.string().refine((val) => !isNaN(Date.parse(val)), 'Format tanggal tidak valid'),
+  date: z.string().trim().refine((val) => !isNaN(Date.parse(val)), 'Format tanggal tidak valid'),
   startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Format waktu tidak valid'),
   endTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Format waktu tidak valid'),
-  subject: z.string().min(3, 'Mata pelajaran minimal 3 karakter'),
-  topic: z.string().min(5, 'Topik minimal 5 karakter'),
-  subject2: z.string().min(3, 'Mata pelajaran minimal 3 karakter').optional(),
-  topic2: z.string().min(5, 'Topik minimal 5 karakter').optional(),
-  subject3: z.string().min(3, 'Mata pelajaran minimal 3 karakter').optional(),
-  topic3: z.string().min(5, 'Topik minimal 5 karakter').optional(),
+  subject: requiredText('Mata pelajaran harus diisi'),
+  topic: requiredText('Topik harus diisi'),
+  subject2: optionalLessonText('Mata pelajaran harus diisi'),
+  topic2: optionalLessonText('Topik harus diisi'),
+  subject3: optionalLessonText('Mata pelajaran harus diisi'),
+  topic3: optionalLessonText('Topik harus diisi'),
   enthusiasmScore: z.number().int().min(1, 'Skor minimal 1').max(5, 'Skor maksimal 5'),
   focusScore: z.number().int().min(1, 'Skor minimal 1').max(5, 'Skor maksimal 5'),
   understandingScore: z.number().int().min(1, 'Skor minimal 1').max(5, 'Skor maksimal 5'),
@@ -52,7 +70,7 @@ const baseDailyReportSchema = z.object({
 });
 
 export const createDailyReportSchema = baseDailyReportSchema.superRefine((data, ctx) => {
-  if ((data.subject2 && !data.topic2) || (!data.subject2 && data.topic2)) {
+  if (hasLessonValue(data.subject2) !== hasLessonValue(data.topic2)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'Pelajaran 2 harus diisi lengkap (mata pelajaran dan topik)',
@@ -60,7 +78,7 @@ export const createDailyReportSchema = baseDailyReportSchema.superRefine((data, 
     });
   }
 
-  if ((data.subject3 && !data.topic3) || (!data.subject3 && data.topic3)) {
+  if (hasLessonValue(data.subject3) !== hasLessonValue(data.topic3)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'Pelajaran 3 harus diisi lengkap (mata pelajaran dan topik)',
@@ -72,7 +90,7 @@ export const createDailyReportSchema = baseDailyReportSchema.superRefine((data, 
 export const updateDailyReportSchema = baseDailyReportSchema
   .partial()
   .superRefine((data, ctx) => {
-    if ((data.subject2 && !data.topic2) || (!data.subject2 && data.topic2)) {
+    if (hasLessonValue(data.subject2) !== hasLessonValue(data.topic2)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Pelajaran 2 harus diisi lengkap (mata pelajaran dan topik)',
@@ -80,7 +98,7 @@ export const updateDailyReportSchema = baseDailyReportSchema
       });
     }
 
-    if ((data.subject3 && !data.topic3) || (!data.subject3 && data.topic3)) {
+    if (hasLessonValue(data.subject3) !== hasLessonValue(data.topic3)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Pelajaran 3 harus diisi lengkap (mata pelajaran dan topik)',

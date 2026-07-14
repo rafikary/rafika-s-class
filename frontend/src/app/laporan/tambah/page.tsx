@@ -84,10 +84,10 @@ export default function TambahLaporanPage() {
         ...formData,
         subject: normalizedLessons[0].subject,
         topic: normalizedLessons[0].topic,
-        subject2: normalizedLessons[1].subject || undefined,
-        topic2: normalizedLessons[1].topic || undefined,
-        subject3: normalizedLessons[2].subject || undefined,
-        topic3: normalizedLessons[2].topic || undefined,
+        subject2: normalizedLessons[1].subject || null,
+        topic2: normalizedLessons[1].topic || null,
+        subject3: normalizedLessons[2].subject || null,
+        topic3: normalizedLessons[2].topic || null,
         studentId: parseInt(formData.studentId),
       });
       alert('Laporan berhasil ditambahkan!');

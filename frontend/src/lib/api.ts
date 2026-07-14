@@ -27,9 +27,19 @@ const api = axios.create({
 export const handleApiError = (error: unknown): string => {
   if (axios.isAxiosError(error)) {
     const axiosError = error as AxiosError<ApiResponse>;
-    if (axiosError.response?.data?.error) {
-      return axiosError.response.data.error.message;
+    const apiError = axiosError.response?.data?.error;
+
+    if (apiError) {
+      const firstDetail = Array.isArray(apiError.details) ? apiError.details[0] : null;
+
+      if (firstDetail?.message) {
+        const path = Array.isArray(firstDetail.path) ? firstDetail.path.join('.') : '';
+        return path ? `${path}: ${firstDetail.message}` : firstDetail.message;
+      }
+
+      return apiError.message;
     }
+
     return axiosError.message;
   }
   return 'Terjadi kesalahan yang tidak diketahui';
